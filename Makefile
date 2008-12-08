@@ -13,6 +13,8 @@ KERNEL_OBJ=kernel.o
 KERNEL=kernel.bin
 LINKER_SCRIPT=linker.ld
 
+all: img
+
 clean:
 	rm *.o pad *.img *.bin
 	
@@ -20,7 +22,8 @@ assemble:
 	$(NASM) -f elf -o $(LOADER_OBJ) $(LOADER_SRC)
 
 compile: assemble
-	$(GCC) -o $(KERNEL_OBJ) -c $(KERNEL_SRC) -Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs
+	$(GCC) -o $(KERNEL_OBJ) -c $(KERNEL_SRC) \
+		-Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs
 	
 link: compile
 	$(LD) -T $(LINKER_SCRIPT) -o $(KERNEL) $(LOADER_OBJ) $(KERNEL_OBJ)
@@ -28,8 +31,6 @@ link: compile
 img: link
 	dd if=/dev/zero of=pad bs=750 count=1
 	cat $(GRUB_FILES) pad $(KERNEL) > floppy.img
-
-all: img
 
 show_versions:
 	$(GCC) -v
