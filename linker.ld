@@ -1,24 +1,25 @@
 ENTRY (loader)
+phys = 0x00100000;
 
-SECTIONS{
-    . = 0x00100000;
-
-    .text :{
-        *(.text)
+SECTIONS
+{
+    .text phys : AT(phys) {
+	code = .;
+	*(.text)
+	*(.rodata)
+	. = ALIGN(4096);
     }
-
-    .rodata ALIGN (0x1000) : {
-        *(.rodata)
+    .data : AT(phys + (data - code))
+    {
+	data = .;
+	*(.data)
+	. = ALIGN(4096);
     }
-
-    .data ALIGN (0x1000) : {
-        *(.data)
+	.bss : AT(phys + (bss - code))
+    {
+	bss = .;
+	*(.bss)
+	. = ALIGN(4096);
     }
-
-    .bss : {
-        sbss = .;
-        *(COMMON)
-        *(.bss)
-        ebss = .;
-    }
+    end = .;
 }

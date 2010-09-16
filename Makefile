@@ -1,46 +1,53 @@
-CROSS_DIR=/usr/cross/i586-elf/bin
-GRUB_DIR=/usr/cross/utils/grub
-GRUB_FILES=$(GRUB_DIR)/stage1 $(GRUB_DIR)/stage2
-GCC_FLAGS=-Wall -Wextra -nostdlib -nostartfiles \
--nodefaultlibs -fno-builtin -I./
+GCC_FLAGS=-Wall -Wextra -nostdlib -nostdinc -nostartfiles -nodefaultlibs -fno-builtin -fno-stack-protector -ffreestanding -fstrength-reduce -fomit-frame-pointer -finline-functions -O2 -I./include
+LD_FLAGS=-nostdlib -N -T
 
-GCC=$(CROSS_DIR)/gcc
-LD=$(CROSS_DIR)/ld
-NASM=/opt/local/bin/nasm
+GCC=gcc
+LD=ld
+NASM=nasm
 
-KERNEL_SRC=kernel.c
-KERNEL_OBJ=kernel.o
 KERNEL=kernel.bin
 LOADER_SRC=loader.s
 LOADER_OBJ=loader.o
-SCRN_SRC=scrn.c
-SCRN_OBJ=scrn.o
+
+OBJS_KERNEL=kernel/main.o kernel/gdt.o kernel/idt.o kernel/isrs.o kernel/irq.o kernel/timer.o kernel/kb.o kernel/asm/helper.o kernel/asm/gdt.o kernel/asm/idt.o kernel/asm/isrs.o kernel/asm/irqs.o
+OBJS_VIDEO=video/textmode.o
+OBJS_LIB=lib/string.o lib/ports.o
+OBJS=$(LOADER_OBJ) $(OBJS_KERNEL) $(OBJS_VIDEO) $(OBJS_LIB)
+
+SUBDIRS=kernel/ video/ lib/
+
 LINKER_SCRIPT=linker.ld
 
 all: img
-	ls -l $(KERNEL)
-	
-assemble:
+	@echo "\nHere is our kernel...\n"
+	@ls -l $(KERNEL)
+
+makesub:
+	@for dir in $(SUBDIRS); do \
+	    make --directory=$$dir; \
+	done
+
+assemble: makesub
 	$(NASM) -f elf -o $(LOADER_OBJ) $(LOADER_SRC)
 
 compile: assemble
-	$(GCC) -o $(KERNEL_OBJ) -c $(KERNEL_SRC) $(GCC_FLAGS)
-		
-	$(GCC) -o $(SCRN_OBJ) -c $(SCRN_SRC) $(GCC_FLAGS)
-	
+
 link: compile
-	$(LD) -T $(LINKER_SCRIPT) -o $(KERNEL) $(LOADER_OBJ) \
-	 	$(KERNEL_OBJ) $(SCRN_OBJ)
+	$(LD) $(LD_FLAGS) $(LINKER_SCRIPT) -o $(KERNEL) $(OBJS)
 
 img: link
-	@dd if=/dev/zero of=pad bs=750 count=1
-	@cat $(GRUB_FILES) pad $(KERNEL) > floppy.img
+	@dd if=/dev/zero of=pad bs=1024 count=1000
+
+run:
+	qemu -kernel $(KERNEL) -hda pad -m 8
 
 clean:
-	@rm *.o pad *.img *.bin
+	@rm -f *.o *.bin pad
+	@for dir in $(SUBDIRS); do \
+	    make --directory=$$dir clean; \
+	done
 
 show_versions:
 	$(GCC) -v
 	$(LD) -v
 	$(NASM) -v
-	
