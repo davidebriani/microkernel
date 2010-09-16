@@ -38,15 +38,5 @@ void kmain(void* mbd, unsigned int magic) {
 	//timer_wait(1);
 	putch(inportb(0x60));
     }
-
-    /*
-    puts("Initialising physical memory management...\n");
-    pmm_init(mboot_info);
-    kprintf("kernel: 0x%x - 0x%x\nkernel-stack: 0x%x\n", &phys_kernel_start, &phys_kernel_end, kernel_stack);
-    puts("Initiating multitasking...\n");
-    init_multitasking();
-    init_task(task_a, "task_a", 1);
-    init_task(task_b, "task_b", 1);*/
-
     __asm__ __volatile__ ("sti");
 }
