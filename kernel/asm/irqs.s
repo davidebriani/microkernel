@@ -141,7 +141,9 @@ irq_common_stub:
     mov fs, ax
     mov gs, ax
     mov eax, esp
-;sti
+
+    sti		; let interrupts to be serviced
+
     push eax
     mov eax, irq_handler
     call eax
