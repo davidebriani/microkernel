@@ -13,8 +13,10 @@ void kmain(void* mbd, unsigned int magic) {
     set_textcolor(GREEN, BLACK);
     puts("Video OK.\n");
 
-    init_gdt();
     puts("Setting up the GDT........\n");
+    init_gdt();
+
+    puts("Setting up the IDT........\n");
     init_idt();
 
     puts("Setting up all ISRs.......\n");
