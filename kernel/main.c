@@ -14,7 +14,7 @@ void kmain(void* mbd, unsigned int magic) {
     puts("Video OK.\n");
 
     init_gdt();
-    puts("Setting up the GTD........\n");
+    puts("Setting up the GDT........\n");
     init_idt();
 
     puts("Setting up all ISRs.......\n");
