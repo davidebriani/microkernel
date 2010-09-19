@@ -1,7 +1,9 @@
 #ifndef __PORTS_H
 #define __PORTS_H
 
-unsigned char inportb (unsigned short _port);
-void outportb (unsigned short _port, unsigned char _data);
+#include "stdint.h"
+
+uint8_t inportb(uint16_t _port);
+void outportb(uint16_t _port, uint8_t _data);
 
 #endif

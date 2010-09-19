@@ -3,18 +3,18 @@
 
 #include "stdint.h"
 
-void *memcpy(void *dest, const void *src, int count);
-void *memset(void *dest, uint8_t val, int count);
-uint16_t *memsetw(uint16_t *dest, uint16_t val, int count);
+void *memcpy(void *dest, const void *src, int32_t count);
+void *memset(void *dest, uint8_t val, int32_t count);
+uint16_t *memsetw(uint16_t *dest, uint16_t val, int32_t count);
 
-int strlen(const char *str);
-char *strcpy(char *dest, const char *src);
-char *strchr(const char *str, char c);
-char *strcat(char *dest, const char *src);
-int strcmp(const char *s1, const char *s2);
+int32_t strlen(const int8_t *str);
+int8_t *strcpy(int8_t *dest, const int8_t *src);
+int8_t *strchr(const int8_t *str, int8_t c);
+int8_t *strcat(int8_t *dest, const int8_t *src);
+int32_t strcmp(const int8_t *s1, const int8_t *s2);
 
-void putch(const char c);
-void puts(const char *str);
-void kprintf(char *format,...);
+void putch(const int8_t c);
+void puts(const int8_t *str);
+void kprintf(int8_t *format,...);
 
 #endif

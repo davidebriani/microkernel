@@ -1,4 +1,4 @@
-GCC_FLAGS=-Wall -Wextra -nostdlib -nostdinc -nostartfiles -nodefaultlibs -fno-builtin -fno-stack-protector -ffreestanding -fstrength-reduce -fomit-frame-pointer -finline-functions -O2 -I./include
+GCC_FLAGS=-g -Wall -Wextra -nostdlib -nostdinc -nostartfiles -nodefaultlibs -fno-builtin -fno-stack-protector -ffreestanding -fstrength-reduce -fomit-frame-pointer -finline-functions -O2 -I./include
 LD_FLAGS=-nostdlib -N -T
 
 GCC=gcc
@@ -9,7 +9,7 @@ KERNEL=kernel.bin
 LOADER_SRC=loader.s
 LOADER_OBJ=loader.o
 
-OBJS_KERNEL=kernel/main.o kernel/gdt.o kernel/idt.o kernel/isrs.o kernel/irq.o kernel/timer.o kernel/kb.o kernel/asm/helper.o kernel/asm/gdt.o kernel/asm/idt.o kernel/asm/isrs.o kernel/asm/irqs.o
+OBJS_KERNEL=kernel/main.o kernel/dt.o kernel/isrs.o kernel/irq.o kernel/timer.o kernel/kb.o kernel/asm/helper.o kernel/asm/dt.o kernel/asm/isrs.o kernel/asm/irqs.o
 OBJS_VIDEO=video/textmode.o
 OBJS_LIB=lib/string.o lib/ports.o
 OBJS=$(LOADER_OBJ) $(OBJS_KERNEL) $(OBJS_VIDEO) $(OBJS_LIB)

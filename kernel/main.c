@@ -1,44 +1,43 @@
 #include "system.h"
+#include "multiboot.h"
 #include "textmode.h"
 #include "string.h"
 #include "ports.h"
 
 extern void halt();	/* defined in helper.s */
+uint32_t initial_esp;
 
-void kmain(void* mbd, unsigned int magic) {
-    mbd = 0;
-    magic = 1;
+int32_t kmain(struct multiboot *mboot_ptr, uint32_t initial_stack) {
+    initial_esp = initial_stack;
 
     init_video();
     set_textcolor(GREEN, BLACK);
     puts("Video OK.\n");
 
-    puts("Setting up the GDT........\n");
-    init_gdt();
+    puts("Setting up the GDT/IDT....\n");
+    init_dt();
 
-    puts("Setting up the IDT........\n");
-    init_idt();
-
-    puts("Setting up all ISRs.......\n");
-    init_isrs();
-
-    puts("Setting up all IRQs.......\n");
-    init_irq();
-
+    puts("Trying a division by 0....\n");
+    int32_t i = 6/0;
+/*
+    puts("Trying int exceptions.....\n");
+    asm volatile ("int $0x3");
+*/
     puts("Setting up the timer......\n");
     init_timer();
+    timer_phase(50);
 
     puts("Setting up the keyboard...\n");
     init_keyboard();
 
-    //__asm__ __volatile__ ("sti");
-
     set_textcolor(RED, BLACK);
     puts("\nTEST: Input from (US) keyboard:\n");
     set_textcolor(WHITE, BLACK);
+
     while(1) {
 	//timer_wait(1);
 	putch(inportb(0x60));
     }
-    __asm__ __volatile__ ("sti");
+
+    return 0xDEADBABA;
 }

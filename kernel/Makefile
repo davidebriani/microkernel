@@ -2,7 +2,7 @@ GCC_FLAGS=-Wall -Wextra -nostdlib -nostdinc -nostartfiles -nodefaultlibs -fno-bu
 
 GCC=gcc
 
-SRC=main.c gdt.c idt.c isrs.c irq.c timer.c kb.c
+SRC=main.c dt.c isrs.c irq.c timer.c kb.c
 SUBDIRS=asm/
 
 all: $(SRC)

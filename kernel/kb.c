@@ -2,7 +2,7 @@
 #include "ports.h"
 #include "string.h"
 
-unsigned char kbdus[128] = {
+uint8_t kbdus[128] = {
     0,  27, '1', '2', '3', '4', '5', '6', '7', '8',	/* 9 */
   '9', '0', '-', '=', '\b',	/* Backspace */
   '\t',			/* Tab */
@@ -42,8 +42,8 @@ unsigned char kbdus[128] = {
 };
 
 /* Handles the keyboard interrupt */
-void keyboard_handler(struct regs *r) {
-    unsigned char scancode;
+static void keyboard_handler(struct regs *r) {
+    uint8_t scancode;
 
     /* Read from the keyboard's data buffer */
     scancode = inportb(0x60);
@@ -73,5 +73,5 @@ void keyboard_handler(struct regs *r) {
 
 /* Installs the keyboard handler into IRQ1 */
 void init_keyboard() {
-    irq_install_handler(1, keyboard_handler);
+    irq_install_handler(IRQ1, &keyboard_handler);
 }
