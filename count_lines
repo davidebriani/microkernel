@@ -1,5 +1,5 @@
 #!/bin/sh
 
-sed -n '$=' linker.ld loader.s Makefile */* */*/* | xargs echo "Total lines of code:"
+sed -n '$=' link.ld boot.s Makefile */* */*/* | xargs echo "Total lines of code:"
 
 exit 0

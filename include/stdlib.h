@@ -1,6 +1,7 @@
-#ifndef __STDLIB_H
-#define __STDLIB_H
+#ifndef STDLIB_H
+#define STDLIB_H
 
+/* A few useful defines */
 #define NULL		0
 #define FALSE		0
 #define TRUE		1

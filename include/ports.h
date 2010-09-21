@@ -1,9 +1,10 @@
-#ifndef __PORTS_H
-#define __PORTS_H
+#ifndef PORTS_H
+#define PORTS_H
 
 #include "stdint.h"
 
-uint8_t inportb(uint16_t _port);
-void outportb(uint16_t _port, uint8_t _data);
+void	 outb(uint16_t port, uint8_t value);
+uint8_t	 inb(uint16_t port);
+uint16_t inw(uint16_t port);
 
 #endif

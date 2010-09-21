@@ -1,53 +1,35 @@
-GCC_FLAGS=-g -Wall -Wextra -nostdlib -nostdinc -nostartfiles -nodefaultlibs -fno-builtin -fno-stack-protector -ffreestanding -fstrength-reduce -fomit-frame-pointer -finline-functions -O2 -I./include
-LD_FLAGS=-nostdlib -N -T
-
-GCC=gcc
-LD=ld
+SOURCES=boot.o src/main.o video/textmode.o lib/string.o lib/ports.o src/dt.o src/isr.o src/asm/interrupt.o src/asm/dt.o src/timer.o src/kb.o
 NASM=nasm
 
-KERNEL=kernel.bin
-LOADER_SRC=loader.s
-LOADER_OBJ=loader.o
+ASFLAGS=-felf
+#CFLAGS=-nostdlib -nostdinc -fno-builtin -fno-stack-protector -Iinclude
+LDFLAGS=-Tlink.ld
 
-OBJS_KERNEL=kernel/main.o kernel/dt.o kernel/isrs.o kernel/irq.o kernel/timer.o kernel/kb.o kernel/asm/helper.o kernel/asm/dt.o kernel/asm/isrs.o kernel/asm/irqs.o
-OBJS_VIDEO=video/textmode.o
-OBJS_LIB=lib/string.o lib/ports.o
-OBJS=$(LOADER_OBJ) $(OBJS_KERNEL) $(OBJS_VIDEO) $(OBJS_LIB)
-
-SUBDIRS=kernel/ video/ lib/
-
-LINKER_SCRIPT=linker.ld
-
-all: img
-	@echo "\nHere is our kernel...\n"
-	@ls -l $(KERNEL)
-
-makesub:
-	@for dir in $(SUBDIRS); do \
-	    make --directory=$$dir; \
-	done
-
-assemble: makesub
-	$(NASM) -f elf -o $(LOADER_OBJ) $(LOADER_SRC)
-
-compile: assemble
-
-link: compile
-	$(LD) $(LD_FLAGS) $(LINKER_SCRIPT) -o $(KERNEL) $(OBJS)
-
-img: link
-	@dd if=/dev/zero of=pad bs=1024 count=1000
-
-run:
-	qemu -kernel $(KERNEL) -hda pad -m 8
+all: link
 
 clean:
-	@rm -f *.o *.bin pad
-	@for dir in $(SUBDIRS); do \
-	    make --directory=$$dir clean; \
-	done
+	@rm *.o kernel
+	@cd src && make clean
+	@cd video && make clean
+	@cd lib && make clean
 
-show_versions:
-	$(GCC) -v
-	$(LD) -v
-	$(NASM) -v
+link: compile $(SOURCES)
+	ld $(LDFLAGS) -o kernel $(SOURCES)
+
+compile: assemble
+	cd video && make
+	cd src && make
+	cd lib && make
+
+assemble:
+	$(NASM) $(ASFLAGS) boot.s
+
+run: floppy.img
+	qemu -fda floppy.img
+
+image: kernel floppy.img
+	sudo /sbin/losetup /dev/loop0 floppy.img
+	sudo mount /dev/loop0 /mnt
+	sudo cp kernel /mnt/kernel
+	sudo umount /dev/loop0
+	sudo /sbin/losetup -d /dev/loop0

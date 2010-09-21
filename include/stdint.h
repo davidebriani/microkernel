@@ -1,9 +1,11 @@
-#ifndef __STDINT_H
-#define __STDINT_H
+#ifndef STDINT_H
+#define STDINT_H
 
-typedef unsigned long long	uint64_t;
+/* Some nice typedefs, to standardise sizes across platforms.
+*  These typedefs are written for 32-bit X86. */
+/*typedef unsigned long long	uint64_t;
 typedef long long		int64_t;
-typedef unsigned int		uint32_t;
+*/typedef unsigned int		uint32_t;
 typedef int			int32_t;
 typedef unsigned short		uint16_t;
 typedef short			int16_t;

@@ -1,5 +1,5 @@
-#ifndef __STRING_H
-#define __STRING_H
+#ifndef STRING_H
+#define STRING_H
 
 #include "stdint.h"
 
@@ -12,9 +12,5 @@ int8_t *strcpy(int8_t *dest, const int8_t *src);
 int8_t *strchr(const int8_t *str, int8_t c);
 int8_t *strcat(int8_t *dest, const int8_t *src);
 int32_t strcmp(const int8_t *s1, const int8_t *s2);
-
-void putch(const int8_t c);
-void puts(const int8_t *str);
-void kprintf(int8_t *format,...);
 
 #endif

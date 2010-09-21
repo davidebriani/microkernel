@@ -1,10 +1,10 @@
-MBOOT_PAGE_ALIGN	equ 1<<0	; Load kernel and modules on a page boundary
-MBOOT_MEM_INFO		equ 1<<1	; Provide your kernel with memory info
-MBOOT_HEADER_MAGIC	equ 0x1BADB002	; Multiboot Magic value
+MBOOT_PAGE_ALIGN    equ 1<<0		; Load kernel and modules on a page boundary
+MBOOT_MEM_INFO      equ 1<<1		; Provide your kernel with memory info
+MBOOT_HEADER_MAGIC  equ 0x1BADB002	; Multiboot Magic value
 ; NOTE: We do not use MBOOT_AOUT_KLUDGE. It means that GRUB does not
 ; pass us a symbol table.
-MBOOT_HEADER_FLAGS	equ MBOOT_PAGE_ALIGN | MBOOT_MEM_INFO
-MBOOT_CHECKSUM		equ -(MBOOT_HEADER_MAGIC + MBOOT_HEADER_FLAGS)
+MBOOT_HEADER_FLAGS  equ MBOOT_PAGE_ALIGN | MBOOT_MEM_INFO
+MBOOT_CHECKSUM      equ -(MBOOT_HEADER_MAGIC + MBOOT_HEADER_FLAGS)
 
 
 [BITS 32]			; All instructions should be 32-bit.
@@ -27,13 +27,15 @@ mboot:
     dd  start			; Kernel entry point (initial EIP).
 
 [GLOBAL start]			; Kernel entry point.
-[EXTERN kmain]			; This is the entry point of our C code
+[EXTERN main]			; This is the entry point of our C code
 
 start:
-    push esp
-    push ebx			; Load multiboot header location
+    ; Load multiboot information:
+    push    ebx
 
     ; Execute the kernel:
     cli				; Disable interrupts.
-    call kmain			; call our main() function.
-    jmp $
+    call main			; call our main() function.
+    jmp $			; Enter an infinite loop, to stop the processor
+				; executing whatever rubbish is in the memory
+				; after our kernel!

@@ -1,15 +1,39 @@
-#ifndef __TEXTMODE_H
-#define __TEXTMODE_H
+#ifndef TEXTMODE_H
+#define TEXTMODE_H
 
 #include "stdint.h"
 
-void cls();
-uint16_t textcolor(uint8_t forecolor, uint8_t backcolor);
-void set_textcolor(uint8_t forecolor, uint8_t backcolor);
+/* Sets our text-mode VGA pointer and clears the screen */
 void init_video();
+
+/* Detects installed graphics card type. Returns:
+*  CARD_MONO	if monochromatic card
+*  CARD_COLOR	if color card */
 uint8_t detect_video();
+
+/* Combines background and foregorund color to attribute byte */
+uint16_t textcolor(uint8_t forecolor, uint8_t backcolor);
+
+/* Sets the forecolor and backcolor that we will use */
+void set_textcolor(uint8_t forecolor, uint8_t backcolor);
+
+/* Updates the hardware cursor */
 void move_csr();
+
+/* Scrolls the screen */
 void scroll();
+
+/* Clears the screen */
+void cls();
+
+/* Print a character on the screen */
+void putch(const int8_t c);
+
+/* Print an array of character (a string) on the screen */
+void puts(const int8_t *str);
+
+/* Simple implementation of the common printf */
+void kprintf(int8_t *format,...);
 
 /* default pagination */
 #define COLS		80U

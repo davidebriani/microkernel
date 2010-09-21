@@ -1,11 +1,9 @@
-GCC_FLAGS=-Wall -Wextra -nostdlib -nostdinc -nostartfiles -nodefaultlibs -fno-builtin -fno-stack-protector -ffreestanding -fstrength-reduce -fomit-frame-pointer -finline-functions -O2 -I../include
+SOURCES=textmode.o
 
-GCC=gcc
+CC=gcc
+CFLAGS=-nostdlib -nostdinc -fno-builtin -fno-stack-protector -Wall -Wextra -pedantic -I../include -nostartfiles -nodefaultlibs -ffreestanding -fstrength-reduce -finline-functions -fomit-frame-pointer
 
-SRC=textmode.c
-
-all: $(SRC)
-	$(GCC) $(GCC_FLAGS) -c $(SRC)
+all: $(SOURCES)
 
 clean:
-	@rm -f *.o
+	@rm *.o

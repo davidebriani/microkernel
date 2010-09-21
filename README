@@ -1,18 +1,45 @@
+Yet another microkernel
+=======================
+
+Licensed using the MIT Licence: see LICENSE file for details.
+
+
 This is not a great project. Surely not now.
 This is not an Operating System. Surely it won't be it.
 This is not a microkernel too. Though it's surely the main goal of this project.
 I'm trying to learn something about kernel's land; you'll forgive for being such a newbie...
 
-PS:
-    this is an x86 multiboot compliant microkernel which does nothing interesting at the moment.
+This... thing... is intended to become a microkernel, x86 based OS.
+It gets started by GRUB (or any other multiboot compliant bootloader), and works in Protected Mode.
 
-Dev tools:
+
+
+Dependencies
+============
+
     GNU gcc	4.4.4-14 (4.4.5 prerelease)
     Nasm	2.09.01 (you can easily migrate to another assembler)
     GNU ld	2.20.1
     GNU Make	3.81
 
-TODO:
-    * Some mistakes with the IDT...
-    * I strongly suspect I did something wrong with the irqs handler...
+    Qemu	0.12.5
+
+
+
+Build Instructions
+==================
+
+    make
+    make image	(will need 'sudo')
+    make run	(will nedd 'qemu')
+
+
+
+TODO
+====
+
+    * Paging
+    * Multitasking
+    * Vesa driver
+    * etc. etc. etc...
     * To read tons of manuals...
