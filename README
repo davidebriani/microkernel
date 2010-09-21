@@ -17,8 +17,8 @@ It gets started by GRUB (or any other multiboot compliant bootloader), and works
 Dependencies
 ============
 
-    GNU gcc	4.4.4-14 (4.4.5 prerelease)
-    Nasm	2.09.01 (you can easily migrate to another assembler)
+    GNU gcc	4.4.4-14 (4.4.5)
+    Nasm	2.09.01
     GNU ld	2.20.1
     GNU Make	3.81
 
@@ -38,8 +38,10 @@ Build Instructions
 TODO
 ====
 
-    * Paging
-    * Multitasking
-    * Vesa driver
+    * paging
+    * multitasking
+    * user mode
+    * fs
+    * vesa driver
     * etc. etc. etc...
-    * To read tons of manuals...
+    * to read tons of manuals...

@@ -11,7 +11,7 @@ int main(struct multiboot *mboot_ptr) {
     init_video();
 
     /* Write out sample strings */
-    set_textcolor(GREY, BLACK);
+    set_textcolor(LIGHTGREEN, BLACK);
     puts("# Video................ OK\n");
     puts("# GDT.................. OK\n");
     puts("# IDT.................. OK\n");
