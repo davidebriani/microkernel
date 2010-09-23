@@ -1,4 +1,4 @@
-SOURCES=main.o dt.o isr.o timer.o kb.o
+SOURCES=main.o dt.o isr.o timer.o kb.o paging.o heap.o panic.o
 
 CC=gcc
 #CFLAGS=-nostdlib -nostdinc -fno-builtin -fno-stack-protector -Wall -Wextra -pedantic -I../include

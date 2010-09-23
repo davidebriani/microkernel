@@ -1,4 +1,4 @@
-SOURCES=boot.o src/main.o video/textmode.o lib/string.o lib/ports.o src/dt.o src/isr.o src/asm/interrupt.o src/asm/dt.o src/timer.o src/kb.o
+SOURCES=boot.o src/main.o video/textmode.o lib/string.o lib/ports.o src/dt.o src/isr.o src/asm/interrupt.o src/asm/dt.o src/timer.o src/kb.o src/paging.o src/heap.o src/panic.o
 NASM=nasm
 
 ASFLAGS=-felf

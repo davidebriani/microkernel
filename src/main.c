@@ -1,14 +1,18 @@
 #include "textmode.h"
 #include "dt.h"
+#include "paging.h"
 #include "timer.h"
 #include "kb.h"
 
 int main(struct multiboot *mboot_ptr) {
-    /* Initialise all the ISRs and segmentation */
+    /* Setup all the ISRs and segmentation */
     init_dt();
 
-    /* Initialise the screen (by clearing it) */
+    /* Setup the screen (by clearing it) */
     init_video();
+
+    /* Setup paging */
+    init_paging();
 
     /* Write out sample strings */
     set_textcolor(LIGHTGREEN, BLACK);
@@ -21,7 +25,7 @@ int main(struct multiboot *mboot_ptr) {
     puts("\n");
     asm volatile("int $0x0");
     asm volatile("int $0x3");
-    asm volatile("sti");	/* Important! Allows interrupt requests */
+    asm volatile("sti");	/* Important! Re-enable interrupt requests */
     puts("\n");
 
     /* Init the system timer */
@@ -35,8 +39,13 @@ int main(struct multiboot *mboot_ptr) {
     /* Wait 1 second... */
     timer_wait(1);
 
+    /* Print out something and change text colors */
+    puts("# Aaaalright. Let's rock!\n\n");
     set_textcolor(WHITE, BLACK);
-    puts("\nAaaalright! You can start typing now:\n");
+
+    /* Force a page fault by reading location 0xA0000000 */
+    uint32_t *ptr = (uint32_t *) 0xA0000000;
+    uint32_t do_page_fault = *ptr;
 
     return 0;
 }

@@ -38,7 +38,8 @@ Build Instructions
 TODO
 ====
 
-    * paging
+    * dynamic memory (heap)
+    * VFS and initrd
     * multitasking
     * user mode
     * fs
