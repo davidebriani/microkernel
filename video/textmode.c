@@ -137,14 +137,14 @@ void putch(const int8_t c) {
     *  in a linear chunk of memory can be represented by:
     *  Index = [(y * width) + x] */
     else if(c >= ' ') {
-        where = textmemptr + (csr_y * 80 + csr_x);
+        where = textmemptr + (csr_y * COLS + csr_x);
         *where = c | att;	/* Character AND attributes: color */
         csr_x++;
     }
 
     /* If the cursor has reached the edge of the screen's width, we
     *  insert a new line in there */
-    if(csr_x >= 80) {
+    if(csr_x >= COLS) {
         csr_x = 0;
         csr_y++;
     }
