@@ -9,6 +9,10 @@ all: assemble $(SOURCES)
 clean:
 	@rm *.o
 	@cd asm && make clean
+	@cd lib && make clean
+	@cd video && make clean
 
 assemble:
 	cd asm && make
+	cd lib && make
+	cd video && make
