@@ -1,24 +1,30 @@
 #include "panic.h"
 #include "textmode.h"
+#include "system.h"
 
-void panic(const char *message, const char *file, uint32_t line)
+static void panic_do(const int8_t *file, uint32_t line)
 {
+    kprintf("FILE:\t%s:%d\n", file, line);
+    kprintf("SYSTEM HALTED!\n");
+
     /* Disable interrupts */
-    asm volatile("cli");
+    cli();
 
-    kprintf("KERNEL PANIC (%s) at %s:%d\n", message, file, line);
-
-    /* Halt by going into an infinite loop. */
+    /* Halt by going into an infinite loop */
     for(;;);
+
+    /* Just in case... */
+    halt();
 }
 
-void panic_assert(const char *file, uint32_t line, const char *desc)
+void panic(const int8_t *message, const int8_t *file, uint32_t line)
 {
-    /* Disable interrupts */
-    asm volatile("cli");
+    kprintf("\n\nKERNEL PANIC: %s\n", message);
+    panic_do(file, line);
+}
 
-    kprintf("ASSERTION FAILED (%s) at %s:%d\n", desc, file, line);
-
-    /* Halt by going into an infinite loop. */
-    for(;;);
+void panic_assert(const int8_t *assertion, const int8_t *file, uint32_t line)
+{
+    kprintf("\n\nASSERTION FAILED: %s\n", assertion);
+    panic_do(file, line);
 }

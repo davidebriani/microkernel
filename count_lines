@@ -1,5 +1,0 @@
-#!/bin/sh
-
-sed -n '$=' link.ld boot.s Makefile */* */*/* | xargs echo "Total lines of code:"
-
-exit 0

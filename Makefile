@@ -1,12 +1,12 @@
-SOURCES=src/asm/boot.o src/main.o src/video/textmode.o src/lib/string.o src/lib/ports.o src/dt.o src/isr.o src/asm/interrupt.o src/asm/dt.o src/timer.o src/kb.o src/heap.o src/paging.o src/panic.o src/oarray.o src/initrd.o src/fs/vfs.o
+SOURCES=src/asm/boot.o src/main.o src/video/textmode.o src/lib/string.o src/lib/ports.o src/dt.o src/isr.o src/asm/interrupt.o src/asm/dt.o src/asm/helper.o src/timer.o src/kb.o src/heap.o src/paging.o src/panic.o src/oarray.o src/initrd.o src/fs/vfs.o
 LDFLAGS=-Tlink.ld
 
 all: link
 
 clean:
-	@rm kernel initrd.img
-	@cd src && make clean
-	@cd scripts/initrd && make clean
+	-@rm kernel initrd.img
+	-@cd src && make clean
+	-@cd scripts/initrd && make clean
 
 link: compile $(SOURCES)
 	ld $(LDFLAGS) -o kernel $(SOURCES)

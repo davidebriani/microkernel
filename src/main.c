@@ -4,7 +4,7 @@
 #include "timer.h"
 #include "kb.h"
 #include "heap.h"
-
+#include "system.h"
 #include "vfs.h"
 #include "multiboot.h"
 #include "initrd.h"
@@ -62,7 +62,8 @@ int main(struct multiboot *mboot_ptr) {
     puts("\n");
     asm volatile("int $0x0");
     asm volatile("int $0x3");
-    asm volatile("sti");	/* Important! Re-enable interrupt requests */
+    /* Important! Re-enable interrupt requests */
+    sti();
 
     /* Check if something went wrong with paging and heap setup */
     puts("\n# Testing the heap.....\n");

@@ -7,4 +7,4 @@ all:
 	mv initrd.img ../../
 
 clean:
-	@rm -f make_initrd
+	-@rm -f make_initrd

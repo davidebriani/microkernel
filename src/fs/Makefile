@@ -6,4 +6,4 @@ CFLAGS=-nostdlib -nostdinc -fno-builtin -fno-stack-protector -Wall -Wextra -I../
 all: $(SOURCES)
 
 clean:
-	@rm *.o
+	-@rm *.o

@@ -7,11 +7,11 @@ CFLAGS=-nostdlib -nostdinc -fno-builtin -fno-stack-protector -Wall -Wextra -I../
 all: assemble $(SOURCES)
 
 clean:
-	@rm *.o
-	@cd asm && make clean
-	@cd lib && make clean
-	@cd video && make clean
-	@cd fs && make clean
+	-@rm *.o
+	-@cd asm && make clean
+	-@cd lib && make clean
+	-@cd video && make clean
+	-@cd fs && make clean
 
 assemble:
 	cd asm && make
