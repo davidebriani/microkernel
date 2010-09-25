@@ -1,4 +1,4 @@
-SOURCES=main.o dt.o isr.o timer.o kb.o heap.o paging.o panic.o oarray.o
+SOURCES=main.o dt.o isr.o timer.o kb.o heap.o paging.o panic.o oarray.o initrd.o
 
 CC=gcc
 #CFLAGS=-nostdlib -nostdinc -fno-builtin -fno-stack-protector -Wall -Wextra -I../include
@@ -11,8 +11,10 @@ clean:
 	@cd asm && make clean
 	@cd lib && make clean
 	@cd video && make clean
+	@cd fs && make clean
 
 assemble:
 	cd asm && make
 	cd lib && make
 	cd video && make
+	cd fs && make
