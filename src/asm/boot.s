@@ -31,7 +31,8 @@ mboot:
 
 start:
     ; Load multiboot information:
-    push    ebx
+    push esp
+    push ebx
 
     ; Execute the kernel:
     cli				; Disable interrupts.

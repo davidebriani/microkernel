@@ -1,19 +1,24 @@
 #include "timer.h"
 #include "isr.h"
 #include "ports.h"
+#include "panic.h"
 
 /* This will keep track of how many ticks that the system has been running for */
 uint32_t timer_ticks = 0;
 
 static void timer_callback(registers_t regs) {
     timer_ticks++;
+    /* We're likely to be multitasking-enabled, so... */
+    ASSERT(SWITCH_TASK_FREQ > 0);		/* Be sure that processes have time for living */
+    if (!(timer_ticks % SWITCH_TASK_FREQ))	/* Delay */
+	switch_task();
 }
 
 void init_timer() {
     /* Firstly, register our timer callback. */
     register_interrupt_handler(IRQ0, &timer_callback);
     /* Now set the timer phase */
-    timer_phase(1000);
+    timer_phase(TIMER_FREQ);
 }
 
 /* This will continuously loop until the given time has been reached */

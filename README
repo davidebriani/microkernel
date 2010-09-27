@@ -39,11 +39,12 @@ TODO
 ====
 
     * kb.c needs repairing and other keymaps (at least the italian one, for me!)
-    * multitasking
+    * multitasking fixes (is it safe? does it work properly?)
     * user mode
     * fat fs
     * ext2
     * elf
+    * pci, usb, etc.
     * vesa driver
     * tcp/ip, etc.
     * etc. etc. etc...

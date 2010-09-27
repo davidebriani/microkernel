@@ -4,7 +4,7 @@
 
 static void panic_do(const int8_t *file, uint32_t line)
 {
-    kprintf("FILE:\t%s:%d\n", file, line);
+    kprintf("FILE: %s:%d\n", file, line);
     kprintf("SYSTEM HALTED!\n");
 
     /* Disable interrupts */

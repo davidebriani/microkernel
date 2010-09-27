@@ -1,7 +1,7 @@
 NASM=nasm
 ASFLAGS=-felf
 
-SRC=boot.s dt.s interrupt.s helper.s
+SRC=boot.s dt.s interrupt.s helper.s process.s
 
 all: $(SRC)
 	for sfile in $(SRC); do \

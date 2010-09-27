@@ -9,12 +9,14 @@
 #include "multiboot.h"
 #include "initrd.h"
 #include "panic.h"
+#include "task.h"
 
 extern placement_address;
+uint32_t initial_esp;
 
-int main(struct multiboot *mboot_ptr) {
-    /* Four pointers for testing purpouses */
-    void *a, *b, *c, *d;
+int main(struct multiboot *mboot_ptr, uint32_t initial_stack)
+{
+    initial_esp = initial_stack;
 
     /* Setup the screen (by clearing it) */
     init_video();
@@ -26,6 +28,13 @@ int main(struct multiboot *mboot_ptr) {
     puts("# GDT.................. OK\n");
     puts("# IDT.................. OK\n");
 
+    /* Init the system timer */
+    init_timer();
+    puts("# Timer/Clock.......... OK\n");
+
+    /* Init the keyboard */
+    init_keyboard();
+    puts("# Keyboard (US)........ OK\n");
 
     /* Find the location of our initial ramdisk which should have
     *  been loaded as a module by the boot loader */
@@ -35,25 +44,17 @@ int main(struct multiboot *mboot_ptr) {
     /* Don't trample our module with placement accesses, please! */
     placement_address = initrd_end;
 
-
     /* Setup paging */
     init_paging();
     puts("# Paging............... OK\n");
 
-
-
-    /* Initialise the initial ramdisk, and set it as the filesystem root. */
+    /* Initialise the initial ramdisk, and set it as the filesystem root */
     fs_root = initialise_initrd(initrd_location);
 
+    /* Setup multitasking */
+    init_tasking();
+    puts("# Multitasking......... OK\n");
 
-
-    /* Init the system timer */
-    init_timer();
-    puts("# Timer/Clock.......... OK\n");
-
-    /* Init the keyboard */
-    init_keyboard();
-    puts("# Keyboard (US)........ OK\n");
 
     set_textcolor(LIGHTRED, BLACK);
 
@@ -67,15 +68,15 @@ int main(struct multiboot *mboot_ptr) {
 
     /* Check if something went wrong with paging and heap setup */
     puts("\n# Testing the heap.....\n");
-    a = (void *) kmalloc(8);
-    b = (void *) kmalloc(8);
-    c = (void *) kmalloc(8);
+    void *a = (void *) kmalloc(8);
+    void *b = (void *) kmalloc(8);
+    void *c = (void *) kmalloc(8);
     kprintf("a: 0x%x\n", a);
     kprintf("b: 0x%x\n", b);
     kprintf("c: 0x%x\n", c);
     kfree(c);
     kfree(b);
-    d = (void*)kmalloc(12);
+    void *d = (void *) kmalloc(12);
     kprintf("d: 0x%x\n", d);
     kfree(a);
     kfree(d);
@@ -90,19 +91,29 @@ int main(struct multiboot *mboot_ptr) {
 	kprintf("Found file %s", node->name);
 	fs_node_t *fsnode = finddir_fs(fs_root, node->name);
 	if ((fsnode->flags & 0x7) == FS_DIRECTORY)
-	    kprintf("\n\t(directory)\n");
+	    puts("\n\t(directory)\n");
 	else
 	{
-	    kprintf("\n\tcontents: \"");
+	    puts("\n\tcontents: \"");
 	    int8_t buf[256];
 	    uint32_t sz = read_fs(fsnode, 0, 256, buf);
 	    int32_t j;
 	    for (j = 0; j < sz; j++)
 		putch(buf[j]);
-	    kprintf("\"\n");
+	    puts("\"\n");
 	}
 	i++;
     }
+
+    /* Create a new process in an new address space which is a clone of this */
+    puts("\n# Testing multitasking...\n");
+    /* Fork! */
+    int32_t ret = fork();
+    /* Print some infos */
+    kprintf("fork() = %d\t getpid() = %d\n", ret, getpid());
+    /* Now the child has to be stopped, or he'll fuck up our code below */
+    if (!ret)
+	for(;;);
 
     /* Wait 1 second... */
     timer_wait(1);
@@ -111,7 +122,6 @@ int main(struct multiboot *mboot_ptr) {
     set_textcolor(LIGHTGREEN, BLACK);
     puts("\n\n# Aaaalright. Let's rock!\n\n");
     set_textcolor(WHITE, BLACK);
-
 
     return 0;
 }

@@ -55,4 +55,7 @@ void page_fault(registers_t regs);
 void alloc_frame(page_t *page, int32_t is_kernel, int32_t is_writeable);
 void free_frame(page_t *page);
 
+/* Makes a copy of a page directory */
+page_directory_t *clone_directory(page_directory_t *src);
+
 #endif

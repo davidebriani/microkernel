@@ -3,6 +3,9 @@
 
 #include "stdint.h"
 
+#define TIMER_FREQ		1000
+#define SWITCH_TASK_FREQ	50
+
 /* Install the timer handler && setup the system clock */
 void init_timer();
 
@@ -13,6 +16,6 @@ void timer_phase(uint32_t frequency);
 void timer_uwait(uint32_t ticks);
 
 /* A macro to wait the given time in seconds */
-#define timer_wait(x)	timer_uwait(x*1000)
+#define timer_wait(x)	timer_uwait(x*TIMER_FREQ)
 
 #endif
