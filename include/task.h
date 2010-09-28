@@ -29,4 +29,7 @@ void move_stack(void *new_stack_start, uint32_t size);
 /* Returns the pid of the current process */
 int32_t getpid();
 
+/* Temp forks and executes func() */
+void init_proc(void func());
+
 #endif

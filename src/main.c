@@ -14,6 +14,9 @@
 extern placement_address;
 uint32_t initial_esp;
 
+void proc_a();
+void proc_b();
+
 int main(struct multiboot *mboot_ptr, uint32_t initial_stack)
 {
     initial_esp = initial_stack;
@@ -116,15 +119,30 @@ int main(struct multiboot *mboot_ptr, uint32_t initial_stack)
 
     /* Wait 5 seconds */
     for (i = 5; i > 0; i--) {
+	/* The child print a string each second... */
 	if (!ret)
 	    kprintf("\n%d...\n", i);
+	/* ... but both processes are sleeping */
 	timer_wait(1);
     }
 
+    /* If we are the child process */
     if (!ret)
-	for(;;)putch('>');
-    for(;;)putch('<');
+	for(;;) putch('>');
+
+    /* Only the parent process executes the following line */
+    for(;;) putch('<');
 
 
     return 0;
+}
+
+
+/* These two functions can be executed with init_proc(&proc_a); */
+void proc_a() {
+    for(;;) putch('>');
+}
+
+void proc_b() {
+    for(;;) putch('<');
 }
