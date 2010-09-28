@@ -107,21 +107,24 @@ int main(struct multiboot *mboot_ptr, uint32_t initial_stack)
 
     /* Create a new process in an new address space which is a clone of this */
     puts("\n# Testing multitasking...\n");
+
     /* Fork! */
     int32_t ret = fork();
+
     /* Print some infos */
     kprintf("fork() = %d\t getpid() = %d\n", ret, getpid());
-    /* Now the child has to be stopped, or he'll fuck up our code below */
+
+    /* Wait 5 seconds */
+    for (i = 5; i > 0; i--) {
+	if (!ret)
+	    kprintf("\n%d...\n", i);
+	timer_wait(1);
+    }
+
     if (!ret)
-	for(;;);
+	for(;;)putch('>');
+    for(;;)putch('<');
 
-    /* Wait 1 second... */
-    timer_wait(1);
-
-    /* Print out something and change text colors */
-    set_textcolor(LIGHTGREEN, BLACK);
-    puts("\n\n# Aaaalright. Let's rock!\n\n");
-    set_textcolor(WHITE, BLACK);
 
     return 0;
 }

@@ -39,3 +39,8 @@ void timer_phase(uint32_t hz) {
     outb(0x40, (uint8_t)(divisor & 0xFF));		/* Set low byte of divisor */
     outb(0x40, (uint8_t)((divisor >> 8) & 0xFF));	/* Set high byte of divisor */
 }
+
+/* System uptime in seconds */
+uint32_t uptime() {
+    return timer_ticks / TIMER_FREQ;
+}
