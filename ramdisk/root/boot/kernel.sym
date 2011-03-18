@@ -1,0 +1,5 @@
+vfs_open
+vfs_close
+vfs_read
+vfs_write
+log_write
