@@ -208,7 +208,8 @@ int32_t getpid()
     return current_task->id;
 }
 
-void init_proc(void func()) {
+void init_proc(void func())
+{
     int32_t ret = fork();
     int32_t pid = getpid();
 
@@ -217,28 +218,32 @@ void init_proc(void func()) {
     {
 	/* Execute the requested function */
 	func();
-
-	task_t *tmp_task = (task_t *) ready_queue;
-	task_t *par_task = tmp_task;
-
-	/* Find the child process in the proc. list */
-	while (tmp_task->id != pid) {
-	    par_task = tmp_task;
-	    tmp_task = tmp_task->next;
-	}
-
-	/* Can we delete it? */
-	if (tmp_task != par_task) {
-	    par_task->next = tmp_task->next;
-	    /* Wait 1 second so that we have time to switch
-	    * to another process before this one returns: we
-	    * are killing the child! */
-	    timer_wait(1);
-	} else {
-	    /* Freeze it */
-	    /* TODO: We have to shut it down, not just freeze it!! */
-	    for(;;);
-	}
+	/* Kill the current (child) process. On failure, freeze it */
+	if(!kill_proc(pid)) for(;;);
     }
     return;
+}
+
+int32_t kill_proc(int32_t pid)
+{
+    task_t *tmp_task = (task_t *) ready_queue;
+    task_t *par_task = tmp_task;
+
+    /* Find the process in the proc. list */
+    while (tmp_task->id != pid) {
+        par_task = tmp_task;
+        tmp_task = tmp_task->next;
+    }
+
+    /* Can we delete it? */
+    if (tmp_task != par_task) {
+        par_task->next = tmp_task->next;
+        /* Wait 1 second so that we have time to switch
+        * to another process before this one returns: we
+        * are killing the child! */
+        timer_wait(1);
+	return 0;
+    } else {
+        return -1;
+    }
 }

@@ -32,4 +32,7 @@ int32_t getpid();
 /* Temp forks and executes func() */
 void init_proc(void func());
 
+/* Attempts to kill a process. Returns 0 on success, -1 on failure */
+int32_t kill_proc(int32_t pid);
+
 #endif
