@@ -2,6 +2,7 @@
 #include "isr.h"
 #include "ports.h"
 #include "panic.h"
+#include "task.h"
 
 /* This will keep track of how many ticks that the system has been running for */
 uint32_t timer_ticks = 0;
@@ -11,7 +12,7 @@ static void timer_callback(registers_t regs) {
     /* We're likely to be multitasking-enabled, so... */
     ASSERT(SWITCH_TASK_FREQ > 0);		/* Be sure that processes have time for living */
     if (!(timer_ticks % SWITCH_TASK_FREQ))	/* Delay */
-	switch_task();
+	task_switch();
 }
 
 void init_timer() {

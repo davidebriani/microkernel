@@ -15,24 +15,24 @@ typedef struct task
 } task_t;
 
 /* Initialises the tasking system */
-void init_tasking();
+void init_tasking(void);
 
 /* Called by the timer hook, this changes the running process */
-void task_switch();
+void task_switch(void);
 
 /* Forks the current process, spawning a new one with a different memory space */
-int32_t fork();
+int32_t fork(void);
 
 /* Causes the current process' stack to be forcibly moved to a new location */
 void move_stack(void *new_stack_start, uint32_t size);
 
 /* Returns the pid of the current process */
-int32_t getpid();
+int32_t getpid(void);
 
 /* Temp forks and executes func() */
-void init_proc(void func());
+void task_init(void func(void));
 
 /* Attempts to kill a process. Returns 0 on success, -1 on failure */
-int32_t kill_proc(int32_t pid);
+int32_t task_kill(int32_t pid);
 
 #endif

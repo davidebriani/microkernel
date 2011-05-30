@@ -15,7 +15,7 @@ extern page_directory_t *kernel_directory;
 extern page_directory_t *current_directory;
 extern void alloc_frame(page_t*, int32_t, int32_t);
 extern uint32_t initial_esp;
-extern uint32_t read_eip();
+extern uint32_t read_eip(void);
 
 /* The next available process ID */
 uint32_t next_pid = 1;
@@ -23,7 +23,7 @@ uint32_t next_pid = 1;
 void init_tasking()
 {
     /* Rather important stuff happening, no interrupts please! */
-    asm volatile("cli");
+    __asm__ __volatile__("cli");
 
     /* Relocate the stack so we know where it is */
     move_stack((void *) 0xE0000000, 0x2000);
@@ -37,7 +37,7 @@ void init_tasking()
     current_task->next = 0;
 
     /* Reenable interrupts */
-    asm volatile("sti");
+    __asm__ __volatile__("sti");
 }
 
 void move_stack(void *new_stack_start, uint32_t size)
@@ -53,12 +53,12 @@ void move_stack(void *new_stack_start, uint32_t size)
     /* Flush the TLB by reading and writing the page directory address again */
     uint32_t pd_addr;
 
-    asm volatile("mov %%cr3, %0" : "=r" (pd_addr));
-    asm volatile("mov %0, %%cr3" : : "r" (pd_addr));
+    __asm__ __volatile__("mov %%cr3, %0" : "=r" (pd_addr));
+    __asm__ __volatile__("mov %0, %%cr3" : : "r" (pd_addr));
 
     /* Old ESP and EBP, read from registers */
-    uint32_t old_stack_pointer; asm volatile("mov %%esp, %0" : "=r" (old_stack_pointer));
-    uint32_t old_base_pointer;  asm volatile("mov %%ebp, %0" : "=r" (old_base_pointer));
+    uint32_t old_stack_pointer; __asm__ __volatile__("mov %%esp, %0" : "=r" (old_stack_pointer));
+    uint32_t old_base_pointer;  __asm__ __volatile__("mov %%ebp, %0" : "=r" (old_base_pointer));
 
     /* Offset to add to old stack addresses to get a new stack address */
     uint32_t offset = (uint32_t) new_stack_start - initial_esp;
@@ -86,11 +86,11 @@ void move_stack(void *new_stack_start, uint32_t size)
     }
 
     /* Change stacks */
-    asm volatile("mov %0, %%esp" : : "r" (new_stack_pointer));
-    asm volatile("mov %0, %%ebp" : : "r" (new_base_pointer));
+    __asm__ __volatile__("mov %0, %%esp" : : "r" (new_stack_pointer));
+    __asm__ __volatile__("mov %0, %%ebp" : : "r" (new_base_pointer));
 }
 
-void switch_task()
+void task_switch()
 {
     /* If we haven't initialised tasking yet, just return */
     if (!current_task)
@@ -98,8 +98,8 @@ void switch_task()
 
     /* Read esp, ebp now for saving later on */
     uint32_t esp, ebp, eip;
-    asm volatile("mov %%esp, %0" : "=r"(esp));
-    asm volatile("mov %%ebp, %0" : "=r"(ebp));
+    __asm__ __volatile__("mov %%esp, %0" : "=r"(esp));
+    __asm__ __volatile__("mov %%ebp, %0" : "=r"(ebp));
 
     /* Read the instruction pointer. We do some cunning logic here:
     *  One of two things could have happened when this function exits -
@@ -142,7 +142,7 @@ void switch_task()
     *  * Restarts interrupts. The STI instruction has a delay - it doesn't take effect until after
     *    the next instruction.
     *  * Jumps to the location in ECX (remember we put the new EIP in there). */
-    asm volatile("		\
+    __asm__ __volatile__("		\
 	cli;			\
 	mov %0, %%ecx;		\
 	mov %1, %%esp;		\
@@ -156,7 +156,7 @@ void switch_task()
 int32_t fork()
 {
     /* We are modifying kernel structures, and so cannot */
-    asm volatile("cli");
+    __asm__ __volatile__("cli");
 
     /* Take a pointer to this process' task struct for later reference */
     task_t *parent_task = (task_t *) current_task;
@@ -187,12 +187,12 @@ int32_t fork()
     if (current_task == parent_task)
     {
 	/* We are the parent, so set up the esp/ebp/eip for our child */
-	uint32_t esp; asm volatile("mov %%esp, %0" : "=r"(esp));
-	uint32_t ebp; asm volatile("mov %%ebp, %0" : "=r"(ebp));
+	uint32_t esp; __asm__ __volatile__("mov %%esp, %0" : "=r"(esp));
+	uint32_t ebp; __asm__ __volatile__("mov %%ebp, %0" : "=r"(ebp));
 	new_task->esp = esp;
 	new_task->ebp = ebp;
 	new_task->eip = eip;
-	asm volatile("sti");
+	__asm__ __volatile__("sti");
 
 	return new_task->id;
     }
@@ -208,7 +208,7 @@ int32_t getpid()
     return current_task->id;
 }
 
-void init_proc(void func())
+void task_init(void func(void))
 {
     int32_t ret = fork();
     int32_t pid = getpid();
@@ -219,12 +219,12 @@ void init_proc(void func())
 	/* Execute the requested function */
 	func();
 	/* Kill the current (child) process. On failure, freeze it */
-	if(!kill_proc(pid)) for(;;);
+	if(!task_kill(pid)) for(;;);
     }
     return;
 }
 
-int32_t kill_proc(int32_t pid)
+int32_t task_kill(int32_t pid)
 {
     task_t *tmp_task = (task_t *) ready_queue;
     task_t *par_task = tmp_task;

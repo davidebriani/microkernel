@@ -7,7 +7,7 @@
 #define SWITCH_TASK_FREQ	50
 
 /* Install the timer handler && setup the system clock */
-void init_timer();
+void init_timer(void);
 
 /* Set the timer phase in hz */
 void timer_phase(uint32_t frequency);
@@ -16,7 +16,7 @@ void timer_phase(uint32_t frequency);
 void timer_uwait(uint32_t ticks);
 
 /* Get the current system uptime in seconds */
-uint32_t uptime();
+uint32_t uptime(void);
 
 /* A macro to wait the given time in seconds */
 #define timer_wait(x)	timer_uwait(x*TIMER_FREQ)

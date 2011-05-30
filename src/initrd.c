@@ -7,7 +7,7 @@ initrd_file_header_t *file_headers;	/* The list of file headers */
 fs_node_t *initrd_root;			/* Our root directory node */
 fs_node_t *initrd_dev;			/* We also add a directory node for /dev, so we can mount devfs later on */
 fs_node_t *root_nodes;			/* List of file nodes */
-int32_t nroot_nodes;			/* Number of file nodes */
+uint32_t nroot_nodes;			/* Number of file nodes */
 
 struct dirent dirent;
 
@@ -42,7 +42,7 @@ static struct dirent *initrd_readdir(fs_node_t *node, uint32_t index)
 
 static fs_node_t *initrd_finddir(fs_node_t *node, int8_t *name)
 {
-    int32_t i;
+    uint32_t i;
 
     if (node == initrd_root && !strcmp(name, "dev") )
 	return initrd_dev;
@@ -55,7 +55,7 @@ static fs_node_t *initrd_finddir(fs_node_t *node, int8_t *name)
 
 fs_node_t *initialise_initrd(uint32_t location)
 {
-    int32_t i;
+    uint32_t i;
 
     /* Initialise the main and file header pointers and populate the root directory */
     initrd_header = (initrd_header_t *)location;

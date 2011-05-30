@@ -162,7 +162,7 @@ void puts(const int8_t *text) {
         putch(text[i]);
 }
 
-void kprintf(int8_t *format,...) {
+void kprintf(const int8_t *format,...) {
     uint32_t *args = ((uint32_t*) &format) + 1;
     int8_t *t, d[11], xx[9];
     uint8_t aktarg=0;

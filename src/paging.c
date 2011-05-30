@@ -56,7 +56,7 @@ static uint32_t test_frame(uint32_t frame_addr)
 }
 
 /* Static function to find the first free frame. */
-static uint32_t first_frame()
+static uint32_t first_frame(void)
 {
     uint32_t i, j, toTest;
 
@@ -109,7 +109,7 @@ void init_paging()
     /* The size of physical memory. For the moment we
     *  assume it is 16MB big. */
     uint32_t mem_end_page = 0x1000000;
-    uint32_t phys, i = 0;
+    uint32_t i = 0;
 
     nframes = mem_end_page / 0x1000;
     frames = (uint32_t *) kmalloc(INDEX_FROM_BIT(nframes));
@@ -166,10 +166,10 @@ void switch_page_directory(page_directory_t *dir)
 {
     uint32_t cr0;
     current_directory = dir;
-    asm volatile("mov %0, %%cr3":: "r"(dir->physicalAddr));
-    asm volatile("mov %%cr0, %0": "=r"(cr0));
+    __asm__ __volatile__("mov %0, %%cr3":: "r"(dir->physicalAddr));
+    __asm__ __volatile__("mov %%cr0, %0": "=r"(cr0));
     cr0 |= 0x80000000;	/* Enable paging! */
-    asm volatile("mov %0, %%cr0":: "r"(cr0));
+    __asm__ __volatile__("mov %0, %%cr0":: "r"(cr0));
 }
 
 page_t *get_page(uint32_t address, int32_t make, page_directory_t *dir)
@@ -203,7 +203,7 @@ void page_fault(registers_t regs)
     /* The faulting address is stored in the CR2 register */
     uint32_t faulting_address;
     int32_t present, rw, us, reserved, id;
-    asm volatile("mov %%cr2, %0" : "=r" (faulting_address));
+    __asm__ __volatile__("mov %%cr2, %0" : "=r" (faulting_address));
 
     /* The error code gives us details of what happened. */
     present = !(regs.err_code & 0x1);	/* Page not present */

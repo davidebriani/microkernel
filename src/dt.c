@@ -8,8 +8,8 @@ extern void gdt_flush(uint32_t);
 extern void idt_flush(uint32_t);
 
 /* Internal function prototypes */
-static void init_gdt();
-static void init_idt();
+static void init_gdt(void);
+static void init_idt(void);
 static void gdt_set_gate(int32_t, uint32_t, uint32_t, uint8_t ,uint8_t);
 static void idt_set_gate(uint8_t, uint32_t, uint16_t, uint8_t);
 

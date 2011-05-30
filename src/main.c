@@ -11,11 +11,11 @@
 #include "panic.h"
 #include "task.h"
 
-extern placement_address;
+extern uint32_t placement_address;
 uint32_t initial_esp;
 
-void proc_a();
-void proc_b();
+void proc_a(void);
+void proc_b(void);
 
 int main(struct multiboot *mboot_ptr, uint32_t initial_stack)
 {
@@ -64,8 +64,8 @@ int main(struct multiboot *mboot_ptr, uint32_t initial_stack)
     /* Check if the system really works */
     puts("\n# Testing interrupts...\n");
     puts("\n");
-    asm volatile("int $0x0");
-    asm volatile("int $0x3");
+    __asm__ __volatile__("int $0x0");
+    __asm__ __volatile__("int $0x3");
     /* Important! Re-enable interrupt requests */
     sti();
 
@@ -98,9 +98,9 @@ int main(struct multiboot *mboot_ptr, uint32_t initial_stack)
 	else
 	{
 	    puts("\n\tcontents: \"");
-	    int8_t buf[256];
+	    uint8_t buf[256];
 	    uint32_t sz = read_fs(fsnode, 0, 256, buf);
-	    int32_t j;
+	    uint32_t j;
 	    for (j = 0; j < sz; j++)
 		putch(buf[j]);
 	    puts("\"\n");
@@ -138,7 +138,7 @@ int main(struct multiboot *mboot_ptr, uint32_t initial_stack)
 }
 
 
-/* These two functions can be executed with init_proc(&proc_a); */
+/* These two functions can be executed with task_init(&proc_a); */
 void proc_a() {
     for(;;) putch('>');
 }

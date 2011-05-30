@@ -1,22 +1,15 @@
-Yet another microkernel
-=======================
+Yet another (micro?)kernel
+==========================
 
 Licensed under the terms of the MIT Licence: see LICENSE file for details.
 
-
-This is not a great project. Surely not now.
-This is not an Operating System. Surely it won't be it.
-This is not a microkernel too. Though it's surely the main goal of this project.
-This is a toy kernel to play with: I'm trying to learn something about kernel's land; you'll forgive me for being such a newbie...
-This... thing... is intended to become a (microkernel), x86 based.
-It gets started by GRUB (or any other multiboot compliant bootloader), and works in Protected Mode.
-
-Note: it's in a very early state of development. And, of course, it is absolutely not useful. Not even for learning purpouses I guess.
+This is not a true, functional kernel or OS. This is a toy to play with: I'm trying to learn something about kernel's land and I came up with this; you'll forgive me for being such a newbie...
+The... thing is currently designed for x86 cpu only, gets started by GRUB (or any other multiboot compliant bootloader), and works in Protected Mode. It's in a very early state of development and, of course, it is absolutely not useful.
 
 
 
-Dependencies
-============
+Dependencies (tools it is known to work with)
+=============================================
 
     GNU gcc	4.5.3-1
     Nasm	2.09.08
@@ -30,22 +23,40 @@ Dependencies
 Build Instructions
 ==================
 
-    make
-    make image	(will need 'sudo')
-    make run	(will need 'qemu')
+    make	(compile and glue together source files)
+    make image	(create a bootable image; will need 'sudo')
+    make run	(boot and test the image; will need 'qemu')
 
 
 
 TODO
 ====
 
-    * kb.c needs repairing and other keymaps (at least the italian one, for me!)
-    * user mode
+    * source, makefile & linker script fixes
+    * keyboard stuff, keymaps -> shell, command completion & history prototypes
+    * user mode, syscalls
+    * vfs functions & file editing improvements
+    * newlib port? libgcc port?
+    * handy functions: rnd(), md5sum(), etc.
+    * elf programs
+    * useful shell with programs, command completion & history, basic shell scripting
+    * shell scrolling (save long outputs in buffers)
+    * pc speaker for beeeeppping
+    * tcp/ip, etc.
     * fat fs
     * ext2
-    * elf
+    * ipc?
     * pci, usb, etc.
-    * vesa driver
-    * tcp/ip, etc.
+    * mouse
+    * graphical interface, vesa
     * etc. etc. etc...
-    * to read tons of manuals...
+    * tons of manuals to read!
+
+
+
+Documents/links
+===============
+
+There is no documentation for this project yet.
+
+If you're trying to understand the code or thinking about developing your own OS, you may find very useful documentation/tutorials at [OSdev.org](http://wiki.osdev.org/Main_Page).

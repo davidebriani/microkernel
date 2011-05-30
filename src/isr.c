@@ -9,7 +9,7 @@ isr_t interrupt_handlers[256];
 /* This is a simple string array. It contains the message that
 *  corresponds to each and every exception. We get the correct
 *  message by accessing like: exception_message[interrupt_numr] */
-int8_t *exception_messages[] = {
+const int8_t *exception_messages[] = {
     "Division By Zero",
     "Debug",
     "Non Maskable Interrupt",
