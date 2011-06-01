@@ -13,7 +13,6 @@ volatile task_t *ready_queue;
 /* Some externs are needed to access members in paging.c... */
 extern page_directory_t *kernel_directory;
 extern page_directory_t *current_directory;
-extern void alloc_frame(page_t*, int32_t, int32_t);
 extern uint32_t initial_esp;
 extern uint32_t read_eip(void);
 
@@ -208,7 +207,7 @@ int32_t getpid()
     return current_task->id;
 }
 
-void task_init(void func(void))
+int32_t task_init(void func(void))
 {
     int32_t ret = fork();
     int32_t pid = getpid();
@@ -221,7 +220,7 @@ void task_init(void func(void))
 	/* Kill the current (child) process. On failure, freeze it */
 	if(!task_kill(pid)) for(;;);
     }
-    return;
+    return ret;
 }
 
 int32_t task_kill(int32_t pid)

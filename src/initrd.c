@@ -99,7 +99,7 @@ fs_node_t *initialise_initrd(uint32_t location)
 	*  to the start of the ramdisk. We want it relative to the start of memory */
 	file_headers[i].offset += location;
 	/* Create a new file node */
-	strcpy(root_nodes[i].name, &file_headers[i].name);
+	strcpy(root_nodes[i].name, (const int8_t *) &file_headers[i].name);
 	root_nodes[i].mask = root_nodes[i].uid = root_nodes[i].gid = 0;
 	root_nodes[i].length = file_headers[i].length;
 	root_nodes[i].inode = i;

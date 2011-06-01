@@ -128,17 +128,16 @@ int main(struct multiboot *mboot_ptr, uint32_t initial_stack)
 
     /* If we are the child process */
     if (!ret)
-	for(;;) putch('>');
+	proc_a();
 
     /* Only the parent process executes the following line */
-    for(;;) putch('<');
-
+    proc_b();
 
     return 0;
 }
 
 
-/* These two functions can be executed with task_init(&proc_a); */
+/* Execute these functions with int32_t child_pid = task_init(&proc_a); */
 void proc_a() {
     for(;;) putch('>');
 }

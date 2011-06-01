@@ -29,8 +29,8 @@ void move_stack(void *new_stack_start, uint32_t size);
 /* Returns the pid of the current process */
 int32_t getpid(void);
 
-/* Temp forks and executes func() */
-void task_init(void func(void));
+/* Temp forks and executes func(), returns child's pid */
+int32_t task_init(void func(void));
 
 /* Attempts to kill a process. Returns 0 on success, -1 on failure */
 int32_t task_kill(int32_t pid);
