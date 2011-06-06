@@ -3,6 +3,7 @@
 #include "heap.h"
 #include "string.h"
 #include "timer.h"
+#include "dt.h"
 
 /* The currently running task */
 volatile task_t *current_task;
@@ -34,6 +35,7 @@ void init_tasking()
     current_task->eip = 0;
     current_task->page_directory = current_directory;
     current_task->next = 0;
+    current_task->kernel_stack = kmalloc_a(KERNEL_STACK_SIZE);
 
     /* Reenable interrupts */
     __asm__ __volatile__("sti");
@@ -131,6 +133,10 @@ void task_switch()
 
     /* Make sure the memory manager knows we've changed page directory */
     current_directory = current_task->page_directory;
+
+    /* Change kernel stack over */
+    task_set_stack(current_task->kernel_stack + KERNEL_STACK_SIZE);
+
     /* Here we:
     *  * Stop interrupts so we don't get interrupted.
     *  * Temporarily puts the new EIP location in ECX.
@@ -170,6 +176,7 @@ int32_t fork()
     new_task->esp = new_task->ebp = 0;
     new_task->eip = 0;
     new_task->page_directory = directory;
+    current_task->kernel_stack = kmalloc_a(KERNEL_STACK_SIZE);
     new_task->next = 0;
 
     /* Add it to the end of the ready queue */
@@ -236,6 +243,9 @@ int32_t task_kill(int32_t pid)
 
     /* Can we delete it? */
     if (tmp_task != par_task) {
+	/* If its stack is reachable, delete it */
+	if (tmp_task->kernel_stack)
+	    kfree((void *) tmp_task->kernel_stack);
         par_task->next = tmp_task->next;
         /* Wait 1 second so that we have time to switch
         * to another process before this one returns: we
@@ -245,4 +255,26 @@ int32_t task_kill(int32_t pid)
     } else {
         return -1;
     }
+}
+
+void init_usermode()
+{
+    task_set_stack(current_task->kernel_stack + KERNEL_STACK_SIZE);
+
+    /* Set up a stack structure for switching to user mode */
+    __asm__ __volatile__("cli; \
+	mov $0x23, %ax; \
+	mov %ax, %ds; \
+	mov %ax, %es; \
+	mov %ax, %fs; \
+	mov %ax, %gs; \
+	mov %esp, %eax; \
+	pushl $0x23; \
+	pushl %esp; \
+	pushf; \
+	pushl $0x1B; \
+	push $1f; \
+	iret; \
+	1: \
+	");
 }

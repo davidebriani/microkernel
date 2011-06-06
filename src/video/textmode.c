@@ -13,6 +13,8 @@ static uint8_t hexmap[] = {
     '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
 };
 
+static uint8_t detect_video(void);
+static uint16_t textcolor(uint8_t forecolor, uint8_t backcolor);
 
 /* Scrolls the screen */
 void scroll(void) {
@@ -82,19 +84,19 @@ void cls() {
 }
 
 /* Combines background and foregorund color to attribute byte */
-uint16_t textcolor(uint8_t forecolor, uint8_t backcolor) {
+static uint16_t textcolor(uint8_t forecolor, uint8_t backcolor) {
     /* Top 4 bytes are the background, bottom 4 bytes
      * are the foreground color */
     return (backcolor << 4) | (forecolor & 0x0F);
 }
 
 /* Sets the forecolor and backcolor that we will use */
-void set_textcolor(uint8_t forecolor, uint8_t backcolor) {
+void textmode_color(uint8_t forecolor, uint8_t backcolor) {
     attrib = textcolor(forecolor, backcolor);
 }
 
 /* Sets our text-mode VGA pointer, then clears the screen for us */
-void init_video(void) {
+void init_textmode(void) {
     textmemptr = (unsigned short *)0xB8000;
     cls();
 }
@@ -102,7 +104,7 @@ void init_video(void) {
 /* Detects installed graphics card type. Returns:
 *  CARD_MONO	if monochromatic card
 *  CARD_COLOR	if color card */
-uint8_t detect_video(void) {
+static uint8_t detect_video(void) {
     uint8_t c = (*((uint16_t *) 0x410) & 0x30);
     return c?CARD_MONO:CARD_COLOR;
 }

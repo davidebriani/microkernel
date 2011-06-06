@@ -1,6 +1,5 @@
 #include "paging.h"
 #include "heap.h"
-#include "textmode.h"
 #include "string.h"
 #include "panic.h"
 
@@ -138,7 +137,7 @@ void init_paging()
     *  Allocate a little bit extra so the kernel heap can be
     *  initialised properly */
     i = 0;
-    while (i < placement_address + 0x1000)
+    while (i < placement_address + 0x1000)	/* 0x400000 */
     {
 	/* Kernel code is readable but not writeable from userspace */
 	alloc_frame( get_page(i, 1, kernel_directory), 0, 0);
@@ -213,13 +212,12 @@ void page_fault(registers_t regs)
     id = regs.err_code & 0x10;		/* Caused by an instruction fetch? */
 
     /* Output an error message */
-    set_textcolor(RED, BLACK);
     kprintf("Page fault ( ");
     if (present)	kprintf("present ");
     if (rw)		kprintf("read-only ");
     if (us)		kprintf("user-mode ");
     if (reserved)	kprintf("reserved ");
-    kprintf(") at 0x%x!\n", faulting_address);
+    kprintf(") at 0x%x; EIP=0x%x!\n", faulting_address, regs.eip);
     PANIC("Page fault");
 }
 

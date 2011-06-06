@@ -4,6 +4,8 @@
 #include "stdint.h"
 #include "paging.h"
 
+#define KERNEL_STACK_SIZE    2048    /* Use a 2kb kernel stack */
+
 /* This structure defines a 'task' - a process */
 typedef struct task
 {
@@ -11,6 +13,7 @@ typedef struct task
     uint32_t esp, ebp;			/* Stack and base pointers */
     uint32_t eip;			/* Instruction pointer */
     page_directory_t *page_directory;	/* Page directory */
+    uint32_t kernel_stack;		/* Kernel stack location */
     struct task *next;			/* The next task in a linked list */
 } task_t;
 
@@ -34,5 +37,8 @@ int32_t task_init(void func(void));
 
 /* Attempts to kill a process. Returns 0 on success, -1 on failure */
 int32_t task_kill(int32_t pid);
+
+/* Simulate a return from an exception that began in usermode */
+void init_usermode(void);
 
 #endif

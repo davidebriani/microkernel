@@ -37,7 +37,7 @@ uint32_t kmalloc_int(uint32_t sz, int32_t align, uint32_t *phys) {
 	}
 
 	if (phys)
-	*phys = placement_address;
+	    *phys = placement_address;
 
 	tmp = placement_address;
 	placement_address += sz;

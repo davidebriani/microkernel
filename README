@@ -32,9 +32,9 @@ Build Instructions
 TODO
 ====
 
+    * fix usermode & syscall: the problem could be the paging system
     * source, makefile & linker script fixes
     * keyboard stuff, keymaps -> shell, command completion & history prototypes
-    * user mode, syscalls
     * vfs functions & file editing improvements
     * newlib port? libgcc port?
     * handy functions: rnd(), md5sum(), etc.

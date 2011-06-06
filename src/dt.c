@@ -3,18 +3,20 @@
 #include "ports.h"
 #include "string.h"
 
-/* Two ASM function defined in dt.s to load the GDT and the IDT */
+/* Three ASM function defined in dt.s to load GDT, IDT and TSS */
 extern void gdt_flush(uint32_t);
 extern void idt_flush(uint32_t);
+extern void tss_flush(void);
 
 /* Internal function prototypes */
 static void init_gdt(void);
 static void init_idt(void);
 static void gdt_set_gate(int32_t, uint32_t, uint32_t, uint8_t ,uint8_t);
 static void idt_set_gate(uint8_t, uint32_t, uint16_t, uint8_t);
+static void tss_write(int32_t, uint16_t, uint32_t);
 
-/* Our GDT, with 5 entries, and finally our special GDT pointer */
-gdt_entry_t gdt_entries[5];
+/* Our GDT, with 6 entries, and finally our special GDT pointer */
+gdt_entry_t gdt_entries[6];
 gdt_ptr_t   gdt_ptr;
 /* Declare an IDT of 256 entries. Although we will only use the
 *  first 32 entries, the rest exists as a bit of a trap. If any
@@ -24,10 +26,10 @@ gdt_ptr_t   gdt_ptr;
 *  Interrupt" exception */
 idt_entry_t idt_entries[256];
 idt_ptr_t   idt_ptr;
+tss_entry_t tss_entry;
 
 /* Here are the ISR handler array so we can nullify them on startup */
 extern isr_t interrupt_handlers[];
-
 
 /* Install the GDT and the IDT */
 void init_dt() {
@@ -46,7 +48,7 @@ void init_dt() {
 *  new segment registers */
 static void init_gdt() {
     /* Setup the GDT pointer and limit */
-    gdt_ptr.limit = (sizeof(gdt_entry_t) * 5) - 1;
+    gdt_ptr.limit = (sizeof(gdt_entry_t) * 6) - 1;
     gdt_ptr.base  = (uint32_t)&gdt_entries;
 
     gdt_set_gate(0, 0, 0, 0, 0);                /* Null segment */
@@ -54,9 +56,12 @@ static void init_gdt() {
     gdt_set_gate(2, 0, 0xFFFFFFFF, 0x92, 0xCF); /* Data segment */
     gdt_set_gate(3, 0, 0xFFFFFFFF, 0xFA, 0xCF); /* User mode code segment */
     gdt_set_gate(4, 0, 0xFFFFFFFF, 0xF2, 0xCF); /* User mode data segment */
+    tss_write(5, 0x10, 0x0);
 
     /* Flush out the old GDT and install the new changes */
     gdt_flush((uint32_t)&gdt_ptr);
+
+    tss_flush();
 }
 
 /* Setup a descriptor in the Global Descriptor Table */
@@ -149,6 +154,7 @@ static void init_idt() {
     idt_set_gate(45, (uint32_t)irq13, 0x08, 0x8E);
     idt_set_gate(46, (uint32_t)irq14, 0x08, 0x8E);
     idt_set_gate(47, (uint32_t)irq15, 0x08, 0x8E);
+    idt_set_gate(128, (uint32_t)isr128, 0x08, 0x8E);
 
     /* Points the processor's internal register to the new IDT */
     idt_flush((uint32_t)&idt_ptr);
@@ -162,5 +168,38 @@ static void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags
     idt_entries[num].always0 = 0;	/* (uint8_t) 0x01110; */
     /* We must uncomment the OR below when we get to using user-mode.
     *  It sets the interrupt gate's privilege level to 3. */
-    idt_entries[num].flags   = flags /* | 0x60 */;
+    idt_entries[num].flags   = flags | 0x60 ;
+}
+
+/* Init the task state segment structure */
+static void tss_write(int32_t num, uint16_t ss0, uint32_t esp0)
+{
+    uint32_t base, limit;
+    /* Firstly, let's compute the base and limit of our entry into the GDT */
+    base = (uint32_t) &tss_entry;
+    limit = base + sizeof(tss_entry);
+
+    /* Now add the TSS descriptor's address to the GDT */
+    gdt_set_gate(num, base, limit, 0xE9, 0x00);
+
+    /* Ensure the descriptor is initially zero */
+    memset(&tss_entry, 0, sizeof(tss_entry));
+
+    tss_entry.ss0 = ss0;    /* Set the kernel stack segment */
+    tss_entry.esp0 = esp0;  /* Set the kernel stack pointer */
+
+    /* Here we set the cs, ss, ds, es, fs and gs entries in the TSS. The specify
+    *  what segments should be loaded when the processor switches to kernel mode.
+    *  Therefore they are just the normal kernel code/data segments - 0x08 and
+    *  0x10 respectively, but with the last two bits set, making 0x0b and 0x13.
+    *  The setting of these bits sets the RP (Requested Privilege Level) to 3,
+    *  meaning that this TSS can be used to switch to kernel mode from ring 3 */
+    tss_entry.cs = 0x0b;
+    tss_entry.ss = tss_entry.ds = tss_entry.es = tss_entry.fs = tss_entry.gs = 0x13;
+}
+
+/* Update the TSS entry with the address of the correct kernel stack */
+void task_set_stack(uint32_t stack)
+{
+    tss_entry.esp0 = stack;
 }

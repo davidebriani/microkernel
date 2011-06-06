@@ -1,6 +1,6 @@
 SRCFILES := $(shell ls *.c)
 OBJFILES := $(patsubst %.c,%.o,$(SRCFILES))
-#OBJFILES := main.o dt.o isr.o timer.o kb.o heap.o paging.o panic.o oarray.o initrd.o task.o
+#OBJFILES := main.o dt.o isr.o timer.o kb.o heap.o paging.o panic.o oarray.o initrd.o task.o syscall.o
 
 CC := gcc
 WARNINGS := -Wall -Wextra -ansi -pedantic -Wno-unused-parameter -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls -Wnested-externs -Winline -Wno-long-long -Wuninitialized -Wstrict-prototypes

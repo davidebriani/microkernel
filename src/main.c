@@ -10,6 +10,7 @@
 #include "initrd.h"
 #include "panic.h"
 #include "task.h"
+#include "syscall.h"
 
 extern uint32_t placement_address;
 uint32_t initial_esp;
@@ -21,15 +22,15 @@ int main(struct multiboot *mboot_ptr, uint32_t initial_stack)
 {
     initial_esp = initial_stack;
 
-    /* Setup the screen (by clearing it) */
-    init_video();
-    set_textcolor(LIGHTGREEN, BLACK);
-    puts("# Video................ OK\n");
-
     /* Setup all the ISRs and segmentation */
     init_dt();
+
+    /* Setup the screen (by clearing it) */
+    init_textmode();
+    textmode_color(LIGHTGREEN, BLACK);
     puts("# GDT.................. OK\n");
     puts("# IDT.................. OK\n");
+    puts("# Screen (text mode)... OK\n");
 
     /* Init the system timer */
     init_timer();
@@ -47,30 +48,28 @@ int main(struct multiboot *mboot_ptr, uint32_t initial_stack)
     /* Don't trample our module with placement accesses, please! */
     placement_address = initrd_end;
 
+    /* Initialise the initial ramdisk, and set it as the filesystem root */
+    fs_root = init_initrd(initrd_location);
+
     /* Setup paging */
     init_paging();
     puts("# Paging............... OK\n");
-
-    /* Initialise the initial ramdisk, and set it as the filesystem root */
-    fs_root = initialise_initrd(initrd_location);
 
     /* Setup multitasking */
     init_tasking();
     puts("# Multitasking......... OK\n");
 
-
-    set_textcolor(LIGHTRED, BLACK);
+    textmode_color(LIGHTRED, BLACK);
 
     /* Check if the system really works */
-    puts("\n# Testing interrupts...\n");
-    puts("\n");
+    puts("# Testing interrupts...\n");
     __asm__ __volatile__("int $0x0");
     __asm__ __volatile__("int $0x3");
     /* Important! Re-enable interrupt requests */
     sti();
 
     /* Check if something went wrong with paging and heap setup */
-    puts("\n# Testing the heap.....\n");
+    puts("# Testing the heap.....\n");
     void *a = (void *) kmalloc(8);
     void *b = (void *) kmalloc(8);
     void *c = (void *) kmalloc(8);
@@ -85,7 +84,7 @@ int main(struct multiboot *mboot_ptr, uint32_t initial_stack)
     kfree(d);
 
     /* Try to read files from the ramdisk image */
-    puts("\n# Checking initrd.img....\n");
+    puts("# Checking initrd.img....\n");
     /* list the contents of / */
     int32_t i = 0;
     struct dirent *node = 0;
@@ -108,30 +107,15 @@ int main(struct multiboot *mboot_ptr, uint32_t initial_stack)
 	i++;
     }
 
-    /* Create a new process in an new address space which is a clone of this */
-    puts("\n# Testing multitasking...\n");
+    textmode_color(LIGHTGREEN, BLACK);
 
-    /* Fork! */
-    int32_t ret = fork();
+    /* Setup syscalls */
+    init_syscalls();
+    puts("# Syscalls............. OK\n");
 
-    /* Print some infos */
-    kprintf("fork() = %d\t getpid() = %d\n", ret, getpid());
-
-    /* Wait 5 seconds */
-    for (i = 5; i > 0; i--) {
-	/* The child print a string each second... */
-	if (!ret)
-	    kprintf("\n%d...\n", i);
-	/* ... but both processes are sleeping */
-	timer_wait(1);
-    }
-
-    /* If we are the child process */
-    if (!ret)
-	proc_a();
-
-    /* Only the parent process executes the following line */
-    proc_b();
+    /* Switch to user mode */
+    init_usermode();
+    syscall_puts("# Usermode..............OK\n");
 
     return 0;
 }

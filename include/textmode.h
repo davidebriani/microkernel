@@ -4,18 +4,10 @@
 #include "stdint.h"
 
 /* Sets our text-mode VGA pointer and clears the screen */
-void init_video(void);
-
-/* Detects installed graphics card type. Returns:
-*  CARD_MONO	if monochromatic card
-*  CARD_COLOR	if color card */
-uint8_t detect_video(void);
-
-/* Combines background and foregorund color to attribute byte */
-uint16_t textcolor(uint8_t forecolor, uint8_t backcolor);
+void init_textmode(void);
 
 /* Sets the forecolor and backcolor that we will use */
-void set_textcolor(uint8_t forecolor, uint8_t backcolor);
+void textmode_color(uint8_t forecolor, uint8_t backcolor);
 
 /* Updates the hardware cursor */
 void move_csr(void);

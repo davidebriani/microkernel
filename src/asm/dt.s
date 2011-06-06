@@ -1,4 +1,6 @@
 [GLOBAL gdt_flush]	; Allows the C code to call gdt_flush().
+[GLOBAL idt_flush]	; Allows the C code to call idt_flush().
+[GLOBAL tss_flush]	; Tell the processor where to find the TSS withing the GDT
 
 gdt_flush:
     mov eax, [esp+4]	; Get the pointer to the GDT, passed as a parameter.
@@ -14,9 +16,15 @@ gdt_flush:
 .flush:
     ret
 
-[GLOBAL idt_flush]	; Allows the C code to call idt_flush().
-
 idt_flush:
     mov eax, [esp+4]	; Get the pointer to the IDT, passed as a parameter.
     lidt [eax]		; Load the IDT pointer.
+    ret
+
+tss_flush:
+    mov ax, 0x2B	; Load the index of the TSS structure - the index is
+			; 0x28, as it is the 5th selector and each is 8 bytes
+			; long, but we set the bottom two bits (making 0x2B)
+			; so that it has an RPL of 3, not zero.
+    ltr ax		; Load 0x2B into the task state register.
     ret

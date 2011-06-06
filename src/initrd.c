@@ -53,7 +53,7 @@ static fs_node_t *initrd_finddir(fs_node_t *node, int8_t *name)
     return 0;
 }
 
-fs_node_t *initialise_initrd(uint32_t location)
+fs_node_t *init_initrd(uint32_t location)
 {
     uint32_t i;
 
