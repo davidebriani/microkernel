@@ -44,7 +44,7 @@ uint8_t kbdus[128] = {
 };
 
 /* Handles the keyboard interrupt */
-static void keyboard_handler(registers_t regs) {
+static void keyboard_handler(registers_t *regs) {
     uint8_t scancode;
 
     /* Read from the keyboard's data buffer */

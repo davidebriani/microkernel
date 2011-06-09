@@ -63,7 +63,7 @@ void isr_handler(registers_t regs) {
 
     if (interrupt_handlers[int_no] != 0) {
         isr_t handler = interrupt_handlers[int_no];
-        handler(regs);
+        handler(&regs);
     }
     else {
         /* Is this a fault whose number is from 0 to 31? */
@@ -109,7 +109,7 @@ void irq_handler(registers_t regs) {
     *  IRQ, and then finally, run it */
     if (interrupt_handlers[regs.int_no] != 0) {
         isr_t handler = interrupt_handlers[regs.int_no];
-        handler(regs);
+        handler(&regs);
     }
 
 }

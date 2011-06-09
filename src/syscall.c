@@ -4,7 +4,7 @@
 #include "dt.h"
 #include "textmode.h"
 
-static void syscall_handler(registers_t regs);
+static void syscall_handler(registers_t *regs);
 
 DEFN_SYSCALL1(puts, 0, const int8_t*)
 
@@ -21,18 +21,18 @@ void init_syscalls()
     register_interrupt_handler(0x80, &syscall_handler);
 }
 
-void syscall_handler(registers_t regs)
+void syscall_handler(registers_t *regs)
 {
     int32_t ret;
     void *location;
 
     /* Firstly, check if the requested syscall number is valid.
     *  The syscall number is found in EAX. */
-    if (regs.eax >= num_syscalls)
+    if (regs->eax >= num_syscalls)
         return;
 
     /* Get the required syscall location */
-    location = syscalls[regs.eax];
+    location = syscalls[regs->eax];
 
     /* We don't know how many parameters the function wants, so we just push
     *  them all onto the stack in the correct order. The function will use all
@@ -49,6 +49,6 @@ void syscall_handler(registers_t regs)
       pop %%ebx; \
       pop %%ebx; \
       pop %%ebx; \
-    " : "=a" (ret) : "r" (regs.edi), "r" (regs.esi), "r" (regs.edx), "r" (regs.ecx), "r" (regs.ebx), "r" (location));
-    regs.eax = ret;
+    " : "=a" (ret) : "r" (regs->edi), "r" (regs->esi), "r" (regs->edx), "r" (regs->ecx), "r" (regs->ebx), "r" (location));
+    regs->eax = ret;
 }

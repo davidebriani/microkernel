@@ -7,7 +7,7 @@
 /* This will keep track of how many ticks that the system has been running for */
 uint32_t timer_ticks = 0;
 
-static void timer_callback(registers_t regs) {
+static void timer_callback(registers_t *regs) {
     timer_ticks++;
     /* We're likely to be multitasking-enabled, so... */
     ASSERT(SWITCH_TASK_FREQ > 0);		/* Be sure that processes have time for living */

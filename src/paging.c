@@ -196,7 +196,7 @@ page_t *get_page(uint32_t address, int32_t make, page_directory_t *dir)
     }
 }
 
-void page_fault(registers_t regs)
+void page_fault(registers_t *regs)
 {
     /* A page fault has occurred */
     /* The faulting address is stored in the CR2 register */
@@ -205,11 +205,11 @@ void page_fault(registers_t regs)
     __asm__ __volatile__("mov %%cr2, %0" : "=r" (faulting_address));
 
     /* The error code gives us details of what happened. */
-    present = !(regs.err_code & 0x1);	/* Page not present */
-    rw = regs.err_code & 0x2;		/* Write operation? */
-    us = regs.err_code & 0x4;		/* Processor was in user-mode? */
-    reserved = regs.err_code & 0x8;	/* Overwritten CPU-reserved bits of page entry? */
-    id = regs.err_code & 0x10;		/* Caused by an instruction fetch? */
+    present = !(regs->err_code & 0x1);	/* Page not present */
+    rw = regs->err_code & 0x2;		/* Write operation? */
+    us = regs->err_code & 0x4;		/* Processor was in user-mode? */
+    reserved = regs->err_code & 0x8;	/* Overwritten CPU-reserved bits of page entry? */
+    id = regs->err_code & 0x10;		/* Caused by an instruction fetch? */
 
     /* Output an error message */
     kprintf("Page fault ( ");
@@ -217,7 +217,7 @@ void page_fault(registers_t regs)
     if (rw)		kprintf("read-only ");
     if (us)		kprintf("user-mode ");
     if (reserved)	kprintf("reserved ");
-    kprintf(") at 0x%x; EIP=0x%x!\n", faulting_address, regs.eip);
+    kprintf(") at 0x%x; EIP=0x%x!\n", faulting_address, regs->eip);
     PANIC("Page fault");
 }
 
