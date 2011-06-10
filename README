@@ -41,7 +41,6 @@ TODO
     * elf programs
     * useful shell with programs, command completion & history, basic shell scripting
     * shell scrolling (save long outputs in buffers)
-    * pc speaker for beeeeppping
     * tcp/ip, etc.
     * fat fs
     * ext2

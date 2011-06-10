@@ -14,9 +14,11 @@ clean:
 	-@cd lib && make clean
 	-@cd video && make clean
 	-@cd fs && make clean
+	-@cd audio && make clean
 
 assemble:
 	cd asm && make
 	cd lib && make
 	cd video && make
 	cd fs && make
+	cd audio && make

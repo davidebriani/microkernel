@@ -11,6 +11,7 @@
 #include "panic.h"
 #include "task.h"
 #include "syscall.h"
+#include "speaker.h"
 
 extern uint32_t placement_address;
 uint32_t initial_esp;
@@ -83,8 +84,14 @@ int main(struct multiboot *mboot_ptr, uint32_t initial_stack)
     kfree(a);
     kfree(d);
 
+    /* Check if we are able to use the speaker */
+    puts("# Testing the speaker..\n");
+    beep(100, 1);
+    beep(200, 1);
+    beep(300, 1);
+
     /* Try to read files from the ramdisk image */
-    puts("# Checking initrd.img....\n");
+    puts("# Checking initrd.img..\n");
     /* list the contents of / */
     int32_t i = 0;
     struct dirent *node = 0;
