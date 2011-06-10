@@ -84,12 +84,6 @@ int main(struct multiboot *mboot_ptr, uint32_t initial_stack)
     kfree(a);
     kfree(d);
 
-    /* Check if we are able to use the speaker */
-    puts("# Testing the speaker..\n");
-    beep(100, 1);
-    beep(200, 1);
-    beep(300, 1);
-
     /* Try to read files from the ramdisk image */
     puts("# Checking initrd.img..\n");
     /* list the contents of / */
