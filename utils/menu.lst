@@ -1,0 +1,6 @@
+timeout 3
+
+title	My microkernel!
+	root (fd0)
+	kernel /kernel
+	module /initrd

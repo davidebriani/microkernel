@@ -2,6 +2,7 @@
 #include "isr.h"
 #include "textmode.h"
 #include "ports.h"
+#include "syscall.h"
 
 /* US keyboard keymap */
 uint8_t kbdus[128] = {
@@ -69,7 +70,7 @@ static void keyboard_handler(registers_t *regs) {
         *  to the above layout to correspond to 'shift' being
         *  held. If shift is held using the larger lookup table,
         *  you would add 128 to the scancode when you look for it */
-        putch(kbdus[scancode]);
+        syscall_puts(kbdus[scancode]);
     }
 }
 
