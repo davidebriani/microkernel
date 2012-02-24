@@ -19,7 +19,7 @@ void scroll(void);
 void cls(void);
 
 /* Print a character on the screen */
-void putch(const int8_t c);
+void putc(const int8_t c);
 
 /* Print an array of character (a string) on the screen */
 void puts(const int8_t *str);

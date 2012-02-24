@@ -32,7 +32,7 @@ Build Instructions
 TODO
 ====
 
-    * fix usermode & syscall: the problem could be the paging system
+    * multitasking fixes
     * source, makefile & linker script fixes
     * keyboard stuff, keymaps -> shell, command completion & history prototypes
     * vfs functions & file editing improvements

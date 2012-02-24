@@ -57,9 +57,9 @@ int main(struct multiboot *mboot_ptr, uint32_t initial_stack)
     puts("# Paging............... OK\n");
 
     /* Setup multitasking */
-    init_tasking();
+/*    init_tasking();
     puts("# Multitasking......... OK\n");
-
+*/
     textmode_color(LIGHTRED, BLACK);
 
     /* Check if the system really works */
@@ -85,7 +85,7 @@ int main(struct multiboot *mboot_ptr, uint32_t initial_stack)
     kfree(d);
 
     /* Try to read files from the ramdisk image */
-    puts("# Checking initrd.img..\n");
+    puts("# Testing initrd.img...\n");
     /* list the contents of / */
     int32_t i = 0;
     struct dirent *node = 0;
@@ -102,7 +102,7 @@ int main(struct multiboot *mboot_ptr, uint32_t initial_stack)
 	    uint32_t sz = read_fs(fsnode, 0, 256, buf);
 	    uint32_t j;
 	    for (j = 0; j < sz; j++)
-		putch(buf[j]);
+		putc(buf[j]);
 	    puts("\"\n");
 	}
 	i++;
@@ -115,8 +115,10 @@ int main(struct multiboot *mboot_ptr, uint32_t initial_stack)
     puts("# Syscalls............. OK\n");
 
     /* Switch to user mode */
-    init_usermode();
+/*    init_usermode();
     syscall_puts("# Usermode..............OK\n");
+*/
+    init_shell();
 
     return 0;
 }
@@ -124,9 +126,9 @@ int main(struct multiboot *mboot_ptr, uint32_t initial_stack)
 
 /* Execute these functions with int32_t child_pid = task_init(&proc_a); */
 void proc_a() {
-    for(;;) putch('>');
+    for(;;) putc('>');
 }
 
 void proc_b() {
-    for(;;) putch('<');
+    for(;;) putc('<');
 }

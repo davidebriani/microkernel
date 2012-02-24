@@ -7,13 +7,14 @@
 static void syscall_handler(registers_t *regs);
 
 DEFN_SYSCALL1(puts, 0, const int8_t*)
+DEFN_SYSCALL1(putc, 1, const int8_t)
 
-static void *syscalls[1] =
+static void *syscalls[2] =
 {
-    &puts,
+    &puts, &putc,
 };
 
-uint32_t num_syscalls = 1;
+uint32_t num_syscalls = 2;
 
 void init_syscalls()
 {

@@ -61,5 +61,6 @@ int32_t syscall_##fn(P1 p1, P2 p2, P3 p3, P4 p4, P5 p5) \
 }
 
 DECL_SYSCALL1(puts, const int8_t *)
+DECL_SYSCALL1(putc, const int8_t)
 
 #endif

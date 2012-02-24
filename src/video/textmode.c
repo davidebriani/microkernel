@@ -110,27 +110,30 @@ static uint8_t detect_video(void) {
 }
 
 /* Puts a single character on the screen */
-void putch(const int8_t c) {
+void putc(const int8_t c) {
     uint16_t *where;
     uint32_t att = attrib << 8;
 
     /* Handle a backspace, by moving the cursor back one space */
-    if(c == 0x08) {
-        if(csr_x != 0)
+    if (c == 0x08) {
+        if (csr_x != 0) {
 	    csr_x--;
+	    where = textmemptr + (csr_y * COLS + csr_x);
+	    *where = ' ' | att;
+	}
     }
     /* Handles a tab by incrementing the cursor's x, but only
     *  to a point that will make it divisible by 8 */
-    else if(c == 0x09)
+    else if (c == 0x09)
         csr_x = (csr_x + 8) & ~(8 - 1);
     /* Handles a 'Carriage Return', which simply brings the
     *  cursor back to the margin */
-    else if(c == '\r')
+    else if (c == '\r')
 	csr_x = 0;
     /* We handle our newlines the way DOS and the BIOS do: we
     *  treat it as if a 'CR' was also there, so we bring the
     *  cursor to the margin and we increment the 'y' value */
-    else if(c == '\n') {
+    else if (c == '\n') {
         csr_x = 0;
         csr_y++;
     }
@@ -138,7 +141,7 @@ void putch(const int8_t c) {
     *  printable character. The equation for finding the index
     *  in a linear chunk of memory can be represented by:
     *  Index = [(y * width) + x] */
-    else if(c >= ' ') {
+    else if (c >= ' ') {
         where = textmemptr + (csr_y * COLS + csr_x);
         *where = c | att;	/* Character AND attributes: color */
         csr_x++;
@@ -146,7 +149,7 @@ void putch(const int8_t c) {
 
     /* If the cursor has reached the edge of the screen's width, we
     *  insert a new line in there */
-    if(csr_x >= COLS) {
+    if (csr_x >= COLS) {
         csr_x = 0;
         csr_y++;
     }
@@ -161,7 +164,7 @@ void puts(const int8_t *text) {
     int32_t i;
 
     for (i = 0; i < strlen(text); i++)
-        putch(text[i]);
+        putc(text[i]);
 }
 
 void kprintf(const int8_t *format,...) {
@@ -182,11 +185,11 @@ void kprintf(const int8_t *format,...) {
 	    case 's':	/* string */
 		t = (int8_t *) args[aktarg];
 		while (*t)
-		putch(*t++);
+		putc(*t++);
 		break;
 
 	    case 'c':	/* signle character */
-		putch((int8_t) args[aktarg]);
+		putc((int8_t) args[aktarg]);
 		break;
 
 	    case 'x':	/* 32 bit hex */
@@ -202,7 +205,7 @@ void kprintf(const int8_t *format,...) {
 		n = args[aktarg];
 		if (n < 0) {
 		    u = -n;
-		    putch('-');
+		    putc('-');
 		} else
 		    u = n;
 
@@ -212,7 +215,7 @@ void kprintf(const int8_t *format,...) {
 		    u /= 10;
 		} while (u && i>=0);
 		while (++i <= 10)
-		    putch(d[i]);
+		    putc(d[i]);
 		break;
 
 	    case 'u':	/* unsigned integer */
@@ -223,21 +226,21 @@ void kprintf(const int8_t *format,...) {
 		    u /= 10;
 		} while (u && i>=0);
 		while (++i <= 10)
-		putch(d[i]);
+		putc(d[i]);
 		break;
 
 	    case 'X':	/* 8 bit hex */
 		n = args[aktarg];
-		putch(hexmap[(n & 0xF0) >> 4]);
-		putch(hexmap[n & 0x0F]);
+		putc(hexmap[(n & 0xF0) >> 4]);
+		putc(hexmap[n & 0x0F]);
 		break;
 
 	    default:
-		putch(*format);
+		putc(*format);
 	    }
 	    ++aktarg;
 	} else {
-	    putch(*format);
+	    putc(*format);
 	}
 	++format;
     }
