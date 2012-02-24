@@ -7,14 +7,14 @@
 #define SHELL_PROMPT "Shell:/$ "
 #define SHELL_MOTD "# Welcome! Type help for more information.\n\n"
 
-uint8_t shellBuffer[SHELL_BUFFER_SIZE];
+int8_t shellBuffer[SHELL_BUFFER_SIZE];
 uint32_t shellBufferSize = 0;
 
-static void shell_buffer_write(uint8_t c);
-static uint8_t *shell_buffer_read(void);
+static void shell_buffer_write(int8_t c);
+static int8_t *shell_buffer_read(void);
 static void shell_buffer_clear(void);
 
-static void shell_buffer_write(uint8_t c) {
+static void shell_buffer_write(int8_t c) {
     /* save printable chars (any char greater than and including a space) */
     if (shellBufferSize < SHELL_BUFFER_SIZE && c >= ' ') {
 	    shellBuffer[shellBufferSize] = c;
@@ -26,7 +26,7 @@ static void shell_buffer_write(uint8_t c) {
     }
 }
 
-static uint8_t *shell_buffer_read() {
+static int8_t *shell_buffer_read() {
     shellBuffer[shellBufferSize] = '\0';
     return shellBuffer;
 }
@@ -43,7 +43,7 @@ void init_shell() {
 
     while(1) {
 	if (kbd_buffer_size()) {
-	    uint8_t c = kbd_buffer_read();
+	    int8_t c = kbd_buffer_read();
 	    /* print out c unless shellBuffer is empty and c is a backspace */
 	    if (!(!shellBufferSize && c == '\b'))
 		syscall_putc(c);

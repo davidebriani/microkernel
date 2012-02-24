@@ -250,7 +250,7 @@ int32_t task_kill(int32_t pid)
         /* Wait 1 second so that we have time to switch
         * to another process before this one returns: we
         * are killing the child! */
-        timer_wait(1);
+        sleep(1);
 	return 0;
     } else {
         return -1;

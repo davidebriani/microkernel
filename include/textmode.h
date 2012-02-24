@@ -4,19 +4,19 @@
 #include "stdint.h"
 
 /* Sets our text-mode VGA pointer and clears the screen */
-void init_textmode(void);
+void vga_device_init(void);
 
 /* Sets the forecolor and backcolor that we will use */
-void textmode_color(uint8_t forecolor, uint8_t backcolor);
+void vga_device_cursor_set_color(uint8_t forecolor, uint8_t backcolor);
 
 /* Updates the hardware cursor */
-void move_csr(void);
+void vga_device_cursor_move(void);
 
 /* Scrolls the screen */
-void scroll(void);
+void vga_device_scroll(void);
 
 /* Clears the screen */
-void cls(void);
+void vga_device_clear(void);
 
 /* Print a character on the screen */
 void putc(const int8_t c);
@@ -26,6 +26,23 @@ void puts(const int8_t *str);
 
 /* Simple implementation of the common printf */
 void kprintf(const int8_t *format,...);
+
+struct vga_device
+{
+    uint16_t *address;    /* pointer to video memory */
+    uint32_t cursorX;     /* cursor X position */
+    uint32_t cursorY;     /* cursor Y position */
+    uint16_t attribute;   /* text attribute */
+    unsigned char cursorColor;
+    unsigned short cursorOffset;
+    unsigned int (*read_framebuffer)(struct vga_device *self, unsigned int offset, unsigned int count, void *buffer);
+    unsigned int (*write_framebuffer)(struct vga_device *self, unsigned int offset, unsigned int count, void *buffer);
+    void (*set_cursor_color)(struct vga_device *self, unsigned char fg, unsigned char bg);
+    void (*set_cursor_offset)(struct vga_device *self, unsigned short offset);
+
+};
+
+#define VGA_FB_ADDRESS 0xB8000
 
 /* default pagination */
 #define COLS		80U

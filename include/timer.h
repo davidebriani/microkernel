@@ -19,6 +19,8 @@ void timer_uwait(uint32_t ticks);
 uint32_t uptime(void);
 
 /* A macro to wait the given time in seconds */
-#define timer_wait(x)	timer_uwait(x*TIMER_FREQ)
+#define sleep(x)	timer_uwait(x*TIMER_FREQ)
+/* A macro to wait the given time in mseconds */
+#define usleep(x)	timer_uwait(x)
 
 #endif

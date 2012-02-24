@@ -16,6 +16,7 @@
 #include "task.h"
 #include "syscall.h"
 #include "speaker.h"
+#include "shell.h"
 
 #define DEBUG 0
 

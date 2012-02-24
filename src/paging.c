@@ -1,6 +1,7 @@
 #include "paging.h"
 #include "heap.h"
 #include "string.h"
+#include "textmode.h"
 #include "panic.h"
 
 /* The kernel's page directory */
@@ -67,6 +68,7 @@ static uint32_t first_frame(void)
 		if ( !(frames[i]&toTest) )
 		    return i*4*8+j;
 	    }
+    return 0;
 }
 
 /* Function to allocate a frame. */

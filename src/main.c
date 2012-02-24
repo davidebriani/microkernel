@@ -11,7 +11,6 @@ int main(struct multiboot *mboot_ptr, uint32_t initial_stack)
 {
     kernel_init(mboot_ptr, initial_stack);
     kernel_test();
-    sti();
 
     init_shell();
 
@@ -27,8 +26,8 @@ static void kernel_init(struct multiboot *mboot_ptr, uint32_t initial_stack) {
     init_dt();
 
     /* Setup the screen (by clearing it) */
-    init_textmode();
-    textmode_color(LIGHTGREEN, BLACK);
+    vga_device_init();
+    vga_device_cursor_set_color(LIGHTGREEN, BLACK);
     puts("# GDT.................. OK\n");
     puts("# IDT.................. OK\n");
     puts("# Screen (text mode)... OK\n");
@@ -72,11 +71,25 @@ static void kernel_init(struct multiboot *mboot_ptr, uint32_t initial_stack) {
     syscall_puts("# Usermode..............OK\n");
 #endif
 
-    textmode_color(WHITE, BLACK);
+    /* Re-enable interrupts */
+    sti();
+
+    vga_device_cursor_set_color(WHITE, BLACK);
 }
 
 static void kernel_test(void) {
-    textmode_color(LIGHTRED, BLACK);
+    vga_device_cursor_set_color(LIGHTRED, BLACK);
+
+    puts("# Testing timer........\n");
+    sleep(1);
+
+    puts("# Testing PC speaker...\n");
+    beep(3000, 0.3);
+    beep(2000, 0.3);
+    beep(1000, 0.3);
+    beep(3000, 0.3);
+    beep(2000, 0.3);
+    beep(1000, 0.3);
 
     /* Check if the system really works */
     puts("# Testing interrupts...\n");
@@ -113,17 +126,17 @@ static void kernel_test(void) {
 	else
 	{
 	    uint8_t buf[256] = { 0 };
-	    uint32_t sz = fread(fsnode, 0, 256, buf);
+	    fread(fsnode, 0, 256, buf);
 	    kprintf("-r--r--r--\t%s\t\"%s\"\n", node->name, buf);
 	}
 	i++;
     }
 
-    textmode_color(WHITE, BLACK);
+    vga_device_cursor_set_color(WHITE, BLACK);
 }
 
 static void kernel_halt(void) {
-    textmode_color(LIGHTGREEN, BLACK);
+    vga_device_cursor_set_color(LIGHTGREEN, BLACK);
     syscall_puts("\n# System halted.........OK");
     halt();
 }

@@ -33,7 +33,7 @@ void ubeep(uint32_t freq, uint32_t time)
 {
     speaker_phase(freq);
     speaker_on();
-    timer_uwait(time);
+    usleep(time);
     speaker_off();
     speaker_phase(TIMER_FREQ);
 }

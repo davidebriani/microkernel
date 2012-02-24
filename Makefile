@@ -1,5 +1,4 @@
 # object files from /src/asm go first when linking!
-#OBJFILES=src/asm/boot.o src/main.o src/video/textmode.o src/lib/string.o src/lib/ports.o src/dt.o src/isr.o src/asm/interrupt.o src/asm/dt.o src/asm/helper.o src/timer.o src/kb.o src/heap.o src/paging.o src/panic.o src/oarray.o src/initrd.o src/fs/vfs.o src/task.o src/asm/process.o src/syscall.o shell.o
 SRCFILES := $(shell find -L src -type f -name "*.c")
 ASMFILES := $(shell find -L src -type f -name "*.s")
 OBJFILES := $(patsubst %.s,%.o,$(ASMFILES)) $(patsubst %.c,%.o,$(SRCFILES))
@@ -20,7 +19,7 @@ compile:
 	cd utils/initrd && make
 
 run: floppy.img
-	qemu -fda floppy.img
+	qemu -soundhw pcspk -fda floppy.img
 
 image: kernel floppy.img initrd.img
 	sudo /sbin/losetup /dev/loop0 floppy.img

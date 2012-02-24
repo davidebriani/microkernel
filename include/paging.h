@@ -58,4 +58,7 @@ void free_frame(page_t *page);
 /* Makes a copy of a page directory */
 page_directory_t *clone_directory(page_directory_t *src);
 
+/* Physically copy the data across. This function is in process.s */
+extern void copy_page_physical(uint32_t, uint32_t);
+
 #endif
