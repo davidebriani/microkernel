@@ -21,7 +21,7 @@ static void shell_buffer_write(uint8_t c) {
 	    shellBufferSize++;
     }
     /* if c is a backspace remove the last saved character */
-    if (shellBufferSize && c == 0x08) {
+    if (shellBufferSize && c == '\b') {
 	shellBuffer[--shellBufferSize] = 0x00;
     }
 }
@@ -45,17 +45,19 @@ void init_shell() {
 	if (kbd_buffer_size()) {
 	    uint8_t c = kbd_buffer_read();
 	    /* print out c unless shellBuffer is empty and c is a backspace */
-	    if (!(!shellBufferSize && c == 0x08))
+	    if (!(!shellBufferSize && c == '\b'))
 		syscall_putc(c);
 	    shell_buffer_write(c);
 
 	    if (c == '\n') {
 		int8_t *command = shell_buffer_read();
 		if (!strcmp(command, "help"))
-		    syscall_puts("Help is not available!\n");
+		    syscall_puts("- help\tPrint this text\n- exit\tExit the shell\n");
+		else if (!strcmp(command, "exit"))
+		    break;
 		else {
 		    syscall_puts(command);
-		    syscall_puts(": unknown command.\n");
+		    syscall_puts(": command not found.\n");
 		}
 		shell_buffer_clear();
 		continue;

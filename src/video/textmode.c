@@ -115,7 +115,7 @@ void putc(const int8_t c) {
     uint32_t att = attrib << 8;
 
     /* Handle a backspace, by moving the cursor back one space */
-    if (c == 0x08) {
+    if (c == '\b') {
         if (csr_x != 0) {
 	    csr_x--;
 	    where = textmemptr + (csr_y * COLS + csr_x);
@@ -124,7 +124,7 @@ void putc(const int8_t c) {
     }
     /* Handles a tab by incrementing the cursor's x, but only
     *  to a point that will make it divisible by 8 */
-    else if (c == 0x09)
+    else if (c == '\t')
         csr_x = (csr_x + 8) & ~(8 - 1);
     /* Handles a 'Carriage Return', which simply brings the
     *  cursor back to the margin */

@@ -11,6 +11,8 @@
 #define FS_SYMLINK	0x06
 #define FS_MOUNTPOINT	0x08	/* Is the file an active mountpoint? */
 
+#define FS_NAME_MAX 128
+
 struct fs_node;
 
 /* These typedefs define the type of callbacks,
@@ -24,7 +26,7 @@ typedef struct fs_node * (*finddir_type_t)(struct fs_node*, int8_t *name);
 
 typedef struct fs_node
 {
-    int8_t name[128];	/* The filename */
+    int8_t name[FS_NAME_MAX];	/* The filename */
     uint32_t mask;	/* The permissions mask */
     uint32_t uid;	/* The owning user */
     uint32_t gid;	/* The owning group */
@@ -43,20 +45,18 @@ typedef struct fs_node
 
 struct dirent
 {
-    int8_t name[128];	/* Filename */
-    uint32_t ino;	/* Inode number. Required by POSIX */
+    int8_t name[FS_NAME_MAX];   /* Filename */
+    uint32_t ino;	        /* Inode number. Required by POSIX */
 };
 
 extern fs_node_t *fs_root;	/* The root of the filesystem */
 
-/* Standard read/write/open/close functions. Note that these are all suffixed
-*  with _fs to distinguish them from the read/write/open/close which deal with
-*  file descriptors, not file nodes. */
-uint32_t read_fs(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer);
-uint32_t write_fs(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer);
-void open_fs(fs_node_t *node, uint8_t read, uint8_t write);
-void close_fs(fs_node_t *node);
-struct dirent *readdir_fs(fs_node_t *node, uint32_t index);
-fs_node_t *finddir_fs(fs_node_t *node, int8_t *name);
+/* Standard read/write/open/close functions. Note that these are all suffixed */
+uint32_t fread(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer);
+uint32_t fwrite(fs_node_t *node, uint32_t offset, uint32_t size, uint8_t *buffer);
+void fopen(fs_node_t *node, uint8_t read, uint8_t write);
+void fclose(fs_node_t *node);
+struct dirent *readdir(fs_node_t *node, uint32_t index);
+fs_node_t *finddir(fs_node_t *node, int8_t *name);
 
 #endif

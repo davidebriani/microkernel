@@ -1,26 +1,26 @@
-#include "textmode.h"
-#include "dt.h"
-#include "paging.h"
-#include "timer.h"
-#include "kb.h"
-#include "heap.h"
-#include "system.h"
-#include "vfs.h"
-#include "multiboot.h"
-#include "initrd.h"
-#include "panic.h"
-#include "task.h"
-#include "syscall.h"
-#include "speaker.h"
+#include "kernel.h"
 
 extern uint32_t placement_address;
 uint32_t initial_esp;
 
-void proc_a(void);
-void proc_b(void);
+static void kernel_init(struct multiboot *mboot_ptr, uint32_t initial_stack);
+static void kernel_test(void);
+static void kernel_halt(void);
 
 int main(struct multiboot *mboot_ptr, uint32_t initial_stack)
 {
+    kernel_init(mboot_ptr, initial_stack);
+    kernel_test();
+    sti();
+
+    init_shell();
+
+    kernel_halt();
+
+    return 0;
+}
+
+static void kernel_init(struct multiboot *mboot_ptr, uint32_t initial_stack) {
     initial_esp = initial_stack;
 
     /* Setup all the ISRs and segmentation */
@@ -56,10 +56,26 @@ int main(struct multiboot *mboot_ptr, uint32_t initial_stack)
     init_paging();
     puts("# Paging............... OK\n");
 
+#if DEBUG
     /* Setup multitasking */
-/*    init_tasking();
+    init_tasking();
     puts("# Multitasking......... OK\n");
-*/
+#endif
+
+    /* Setup syscalls */
+    init_syscalls();
+    syscall_puts("# Syscalls............. OK\n");
+
+#if DEBUG
+    /* Switch to user mode */
+    init_usermode();
+    syscall_puts("# Usermode..............OK\n");
+#endif
+
+    textmode_color(WHITE, BLACK);
+}
+
+static void kernel_test(void) {
     textmode_color(LIGHTRED, BLACK);
 
     /* Check if the system really works */
@@ -89,46 +105,25 @@ int main(struct multiboot *mboot_ptr, uint32_t initial_stack)
     /* list the contents of / */
     int32_t i = 0;
     struct dirent *node = 0;
-    while ( (node = readdir_fs(fs_root, i)) != 0)
+    while ( (node = readdir(fs_root, i)) != 0)
     {
-	kprintf("Found file %s", node->name);
-	fs_node_t *fsnode = finddir_fs(fs_root, node->name);
+	fs_node_t *fsnode = finddir(fs_root, node->name);
 	if ((fsnode->flags & 0x7) == FS_DIRECTORY)
-	    puts("\n\t(directory)\n");
+	    kprintf("dr--r--r--\t%s\n", node->name);
 	else
 	{
-	    puts("\n\tcontents: \"");
-	    uint8_t buf[256];
-	    uint32_t sz = read_fs(fsnode, 0, 256, buf);
-	    uint32_t j;
-	    for (j = 0; j < sz; j++)
-		putc(buf[j]);
-	    puts("\"\n");
+	    uint8_t buf[256] = { 0 };
+	    uint32_t sz = fread(fsnode, 0, 256, buf);
+	    kprintf("-r--r--r--\t%s\t\"%s\"\n", node->name, buf);
 	}
 	i++;
     }
 
+    textmode_color(WHITE, BLACK);
+}
+
+static void kernel_halt(void) {
     textmode_color(LIGHTGREEN, BLACK);
-
-    /* Setup syscalls */
-    init_syscalls();
-    puts("# Syscalls............. OK\n");
-
-    /* Switch to user mode */
-/*    init_usermode();
-    syscall_puts("# Usermode..............OK\n");
-*/
-    init_shell();
-
-    return 0;
-}
-
-
-/* Execute these functions with int32_t child_pid = task_init(&proc_a); */
-void proc_a() {
-    for(;;) putc('>');
-}
-
-void proc_b() {
-    for(;;) putc('<');
+    syscall_puts("\n# System halted.........OK");
+    halt();
 }

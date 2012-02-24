@@ -1,10 +1,7 @@
-SRCFILES := $(shell ls *.c)
-OBJFILES := $(patsubst %.c,%.o,$(SRCFILES))
-#OBJFILES := vfs.o
+ROOTDIR := ../..
+INCLUDES := -I../../include
+include $(ROOTDIR)/common.mk
 
-CC := gcc
-WARNINGS := -Wall -Wextra -ansi -pedantic -Wno-unused-parameter -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls -Wnested-externs -Winline -Wno-long-long -Wuninitialized -Wstrict-prototypes
-CFLAGS := -nostdlib -nostdinc -fno-builtin -fno-stack-protector -Wall -Wextra -I../../include -nostartfiles -nodefaultlibs -ffreestanding -fstrength-reduce -finline-functions -fomit-frame-pointer $(WARNINGS)
 
 all: $(OBJFILES)
 
