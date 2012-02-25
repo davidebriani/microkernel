@@ -274,6 +274,7 @@ void init_usermode()
 	pushf; \
 	pushl $0x1B; \
 	push $1f; \
+	sti; \
 	iret; \
 	1: \
 	");

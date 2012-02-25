@@ -19,5 +19,6 @@
 #include "shell.h"
 
 #define DEBUG 0
+#define TEST 0
 
 #endif

@@ -214,7 +214,7 @@ void page_fault(registers_t *regs)
     id = regs->err_code & 0x10;		/* Caused by an instruction fetch? */
 
     /* Output an error message */
-    kprintf("Page fault ( ");
+    kprintf("\nPage fault ( ");
     if (present)	kprintf("present ");
     if (rw)		kprintf("read-only ");
     if (us)		kprintf("user-mode ");

@@ -55,10 +55,11 @@ void init_shell() {
 		    syscall_puts("- help\tPrint this text\n- exit\tExit the shell\n");
 		else if (!strcmp(command, "exit"))
 		    break;
-		else {
-		    syscall_puts(command);
-		    syscall_puts(": command not found.\n");
-		}
+		else
+		    if (strlen(command)) {
+			syscall_puts(command);
+			syscall_puts(": command not found.\n");
+		    }
 		shell_buffer_clear();
 		continue;
 	    }

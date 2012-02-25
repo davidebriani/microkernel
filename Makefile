@@ -2,7 +2,7 @@
 SRCFILES := $(shell find -L src -type f -name "*.c")
 ASMFILES := $(shell find -L src -type f -name "*.s")
 OBJFILES := $(patsubst %.s,%.o,$(ASMFILES)) $(patsubst %.c,%.o,$(SRCFILES))
-LDFLAGS := -Tlink.ld
+LDFLAGS := -m elf_i386 -Tlink.ld
 
 all: link
 

@@ -10,7 +10,6 @@ static void kernel_halt(void);
 int main(struct multiboot *mboot_ptr, uint32_t initial_stack)
 {
     kernel_init(mboot_ptr, initial_stack);
-    kernel_test();
 
     init_shell();
 
@@ -25,9 +24,12 @@ static void kernel_init(struct multiboot *mboot_ptr, uint32_t initial_stack) {
     /* Setup all the ISRs and segmentation */
     init_dt();
 
+    /* Enable Interrupts */
+    sti();
+
     /* Setup the screen (by clearing it) */
     vga_device_init();
-    vga_device_cursor_set_color(LIGHTGREEN, BLACK);
+    vga_device_cursor_set_color(WHITE, BLACK);
     puts("# GDT.................. OK\n");
     puts("# IDT.................. OK\n");
     puts("# Screen (text mode)... OK\n");
@@ -56,6 +58,10 @@ static void kernel_init(struct multiboot *mboot_ptr, uint32_t initial_stack) {
     puts("# Paging............... OK\n");
 
 #if DEBUG
+    kernel_test();
+#endif
+
+#if TEST
     /* Setup multitasking */
     init_tasking();
     puts("# Multitasking......... OK\n");
@@ -65,21 +71,15 @@ static void kernel_init(struct multiboot *mboot_ptr, uint32_t initial_stack) {
     init_syscalls();
     syscall_puts("# Syscalls............. OK\n");
 
-#if DEBUG
+#if TEST
     /* Switch to user mode */
     init_usermode();
     syscall_puts("# Usermode..............OK\n");
 #endif
 
-    /* Re-enable interrupts */
-    sti();
-
-    vga_device_cursor_set_color(WHITE, BLACK);
 }
 
 static void kernel_test(void) {
-    vga_device_cursor_set_color(LIGHTRED, BLACK);
-
     puts("# Testing timer........\n");
     sleep(1);
 
@@ -131,12 +131,9 @@ static void kernel_test(void) {
 	}
 	i++;
     }
-
-    vga_device_cursor_set_color(WHITE, BLACK);
 }
 
 static void kernel_halt(void) {
-    vga_device_cursor_set_color(LIGHTGREEN, BLACK);
     syscall_puts("\n# System halted.........OK");
     halt();
 }
