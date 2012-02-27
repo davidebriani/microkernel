@@ -1,0 +1,20 @@
+ROOTDIR := ..
+include $(ROOTDIR)/common.mk
+CFLAGS += -I$(ROOTDIR)/include
+
+.PHONY: all clean
+
+all: $(OBJFILES)
+	cd arch/$(ARCH) && make
+	cd lib && make
+	cd video && make
+	cd fs && make
+	cd audio && make
+
+clean:
+	-@rm *.o
+	-@cd arch/$(ARCH) && make clean
+	-@cd lib && make clean
+	-@cd video && make clean
+	-@cd fs && make clean
+	-@cd audio && make clean

@@ -1,21 +1,28 @@
+ROOTDIR := .
+include $(ROOTDIR)/common.mk
+
 # object files from /src/asm go first when linking!
-SRCFILES := $(shell find -L src -type f -name "*.c")
-ASMFILES := $(shell find -L src -type f -name "*.s")
+SRCFILES := $(shell find -L kernel lib -type f -name "*.c")
+ASMFILES := $(shell find -L kernel lib -type f -name "*.s")
 OBJFILES := $(patsubst %.s,%.o,$(ASMFILES)) $(patsubst %.c,%.o,$(SRCFILES))
-LDFLAGS := -m elf_i386 -Tlink.ld
+LDFLAGS += -Tlink.ld
+
+.PHONY: all clean link compile run image
 
 all: link
 
 clean:
-	-@rm kernel initrd.img
-	-@cd src && make clean
+	-@rm microkernel initrd.img
+	-@cd kernel && make clean
+	-@cd lib && make clean
 	-@cd utils/initrd && make clean
 
 link: compile $(OBJFILES)
-	ld $(LDFLAGS) -o kernel $(OBJFILES)
+	$(LD) $(LDFLAGS) -o microkernel $(OBJFILES)
 
 compile:
-	cd src && make
+	cd kernel && make
+	cd lib && make
 	cd utils/initrd && make
 
 run: floppy.img
@@ -24,7 +31,7 @@ run: floppy.img
 image: kernel floppy.img initrd.img
 	sudo /sbin/losetup /dev/loop0 floppy.img
 	sudo mount /dev/loop0 /mnt
-	sudo cp kernel /mnt/kernel
+	sudo cp microkernel /mnt/kernel
 	sudo cp initrd.img /mnt/initrd
 	sudo cp utils/menu.lst /mnt/boot/grub/
 	sudo umount /dev/loop0
