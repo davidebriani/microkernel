@@ -1,5 +1,5 @@
 #!/bin/sh
 
-sed -n '$=' link.ld Makefile */* */*/* | xargs echo "Total lines of code:"
+sed -n '$=' $(find . -name "*.ld") $(find . -name "*.mk") $(find . -name "Makefile") $(find . -name "*.c") $(find . -name "*.s") $(find . -name "*.h") | xargs echo "Total lines of code:"
 
 exit 0

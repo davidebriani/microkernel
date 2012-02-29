@@ -1,6 +1,11 @@
+# default - boot the first entry
+default 0
+
+# after 3 seconds boot default
 timeout 3
 
+# My microkernel! - first entry
 title	My microkernel!
-	root (fd0)
-	kernel /kernel
-	module /initrd
+root    (fd0)
+kernel  /kernel
+module  /initrd

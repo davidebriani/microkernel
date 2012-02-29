@@ -11,12 +11,12 @@ The... thing is currently designed for x86 cpu only, gets started by GRUB (or an
 Dependencies (tools it is known to work with)
 =============================================
 
-    GNU gcc	4.5.3-1
-    Nasm	2.09.08
-    GNU ld	2.21.0
+    GNU gcc	4.6.2-12
+    Nasm	2.09.10
+    GNU ld	2.22
     GNU Make	3.81
 
-    Qemu	0.14.0
+    Qemu	0.15.1
 
 
 
