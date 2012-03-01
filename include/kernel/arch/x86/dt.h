@@ -4,7 +4,7 @@
 #include "kernel/stdint.h"
 
 /* Initialisation function is publicly accessible. */
-void init_dt(void);
+void dt_init(void);
 
 /* Update the TSS entry with the address of the correct kernel stack */
 void task_set_stack(uint32_t stack);

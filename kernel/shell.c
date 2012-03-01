@@ -2,6 +2,7 @@
 #include "kernel/shell.h"
 #include "kernel/lib/string.h"
 #include "lib/arch/x86/syscall.h"
+#include "kernel/video/vga.h"
 
 #define SHELL_BUFFER_SIZE 256
 #define SHELL_PROMPT "Shell:/$ "
@@ -36,7 +37,7 @@ static void shell_buffer_clear() {
     shellBufferSize = 0;
 }
 
-void init_shell() {
+void shell_init() {
     syscall_puts(SHELL_MOTD);
 
     shell_buffer_clear();
@@ -52,9 +53,11 @@ void init_shell() {
 	    if (c == '\n') {
 		int8_t *command = shell_buffer_read();
 		if (!strcmp(command, "help"))
-		    syscall_puts("- help\tPrint this text\n- exit\tExit the shell\n");
+		    syscall_puts("- help\tPrint this text\n- clear\tClear the screen\n- exit\tExit the shell\n");
 		else if (!strcmp(command, "exit"))
 		    break;
+		else if (!strcmp(command, "clear"))
+		    vga_device_clear();
 		else
 		    if (strlen(command)) {
 			syscall_puts(command);

@@ -7,7 +7,7 @@
 #define SWITCH_TASK_FREQ	50
 
 /* Install the timer handler && setup the system clock */
-void init_timer(void);
+void timer_init(void);
 
 /* Set the timer phase in hz */
 void timer_phase(uint32_t frequency);

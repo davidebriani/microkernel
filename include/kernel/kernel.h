@@ -2,7 +2,7 @@
 #define KERNEL_H
 
 #include "kernel/stdint.h"
-#include "kernel/video/textmode.h"
+#include "kernel/video/vga.h"
 #include "kernel/arch/x86/dt.h"
 #include "kernel/arch/x86/paging.h"
 #include "kernel/timer.h"

@@ -3,26 +3,26 @@
 extern uint32_t placement_address;
 uint32_t initial_esp;
 
-static void kernel_init(struct multiboot *mboot_ptr, uint32_t initial_stack);
+static void kernel_init(uint32_t mboot_magic, struct multiboot *mboot_ptr, uint32_t initial_stack);
 static void kernel_test(void);
 static void kernel_halt(void);
 
-int main(struct multiboot *mboot_ptr, uint32_t initial_stack)
+int main(uint32_t mboot_magic, struct multiboot *mboot_ptr, uint32_t initial_stack)
 {
-    kernel_init(mboot_ptr, initial_stack);
+    kernel_init(mboot_magic, mboot_ptr, initial_stack);
 
-    init_shell();
+    shell_init();
 
     kernel_halt();
 
     return 0;
 }
 
-static void kernel_init(struct multiboot *mboot_ptr, uint32_t initial_stack) {
+static void kernel_init(uint32_t mboot_magic, struct multiboot *mboot_ptr, uint32_t initial_stack) {
     initial_esp = initial_stack;
 
     /* Setup all the ISRs and segmentation */
-    init_dt();
+    dt_init();
 
     /* Enable Interrupts */
     sti();
@@ -30,16 +30,20 @@ static void kernel_init(struct multiboot *mboot_ptr, uint32_t initial_stack) {
     /* Setup the screen (by clearing it) */
     vga_device_init();
     vga_device_cursor_set_color(WHITE, BLACK);
+
+    if (mboot_magic != MULTIBOOT_MAGIC)
+	PANIC("Not a multiboot-compliant boot loader.");
+
     puts("# GDT.................. OK\n");
     puts("# IDT.................. OK\n");
     puts("# Screen (text mode)... OK\n");
 
     /* Init the system timer */
-    init_timer();
+    timer_init();
     puts("# Timer/Clock.......... OK\n");
 
     /* Init the keyboard */
-    init_keyboard();
+    keyboard_init();
     puts("# Keyboard (US)........ OK\n");
 
     /* Find the location of our initial ramdisk which should have
@@ -51,10 +55,10 @@ static void kernel_init(struct multiboot *mboot_ptr, uint32_t initial_stack) {
     placement_address = initrd_end;
 
     /* Initialise the initial ramdisk, and set it as the filesystem root */
-    fs_root = init_initrd(initrd_location);
+    fs_root = initrd_init(initrd_location);
 
     /* Setup paging */
-    init_paging();
+    paging_init();
     puts("# Paging............... OK\n");
 
 #if DEBUG
@@ -63,17 +67,17 @@ static void kernel_init(struct multiboot *mboot_ptr, uint32_t initial_stack) {
 
 #if TEST
     /* Setup multitasking */
-    init_tasking();
+    tasking_init();
     puts("# Multitasking......... OK\n");
 #endif
 
     /* Setup syscalls */
-    init_syscalls();
+    syscalls_init();
     syscall_puts("# Syscalls............. OK\n");
 
 #if TEST
     /* Switch to user mode */
-    init_usermode();
+    usermode_init();
     syscall_puts("# Usermode..............OK\n");
 #endif
 

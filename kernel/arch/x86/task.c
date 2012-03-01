@@ -1,4 +1,5 @@
 #include "kernel/arch/x86/task.h"
+#include "kernel/arch/x86/dt.h"
 #include "kernel/arch/x86/paging.h"
 #include "kernel/heap.h"
 #include "kernel/lib/string.h"
@@ -224,7 +225,7 @@ int32_t task_init(void func(void))
 	/* Execute the requested function */
 	func();
 	/* Kill the current (child) process. On failure, freeze it */
-	if(!task_kill(pid)) for(;;);
+	if(task_kill(pid) != 0) for(;;);
     }
     return ret;
 }
@@ -256,7 +257,7 @@ int32_t task_kill(int32_t pid)
     }
 }
 
-void init_usermode()
+void usermode_init()
 {
     task_set_stack(current_task->kernel_stack + KERNEL_STACK_SIZE);
 

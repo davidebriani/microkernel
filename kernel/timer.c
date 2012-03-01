@@ -15,9 +15,9 @@ static void timer_callback(registers_t *regs) {
 	task_switch();
 }
 
-void init_timer() {
+void timer_init() {
     /* Firstly, register our timer callback. */
-    register_interrupt_handler(IRQ0, &timer_callback);
+    irq_register_handler(IRQ0, &timer_callback);
     /* Now set the timer phase */
     timer_phase(TIMER_FREQ);
 }

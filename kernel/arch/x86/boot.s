@@ -30,9 +30,9 @@ mboot:
 [EXTERN main]			; This is the entry point of our C code
 
 start:
-    ; Load multiboot information:
-    push esp
-    push ebx
+    push esp			; Load stack pointer
+    push ebx			; Load multi-boot information
+    push eax			; Load multi-boot magic number
 
     ; Execute the kernel:
     cli				; Disable interrupts.

@@ -3,6 +3,6 @@
 
 #include "kernel/stdint.h"
 
-void init_syscalls(void);
+void syscalls_init(void);
 
 #endif

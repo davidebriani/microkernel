@@ -2,6 +2,6 @@
 #define SHELL_H
 
 /* Open up the command prompt */
-void init_shell(void);
+void shell_init(void);
 
 #endif

@@ -1,7 +1,7 @@
 #include "kernel/arch/x86/paging.h"
 #include "kernel/heap.h"
 #include "kernel/lib/string.h"
-#include "kernel/video/textmode.h"
+#include "kernel/video/vga.h"
 #include "kernel/panic.h"
 
 /* The kernel's page directory */
@@ -68,7 +68,7 @@ static uint32_t first_frame(void)
 		if ( !(frames[i]&toTest) )
 		    return i*4*8+j;
 	    }
-    return 0;
+    return (uint32_t) -1;
 }
 
 /* Function to allocate a frame. */
@@ -105,7 +105,7 @@ void free_frame(page_t *page)
     }
 }
 
-void init_paging()
+void paging_init()
 {
     /* The size of physical memory. For the moment we
     *  assume it is 16MB big. */
@@ -151,7 +151,7 @@ void init_paging()
 	alloc_frame( get_page(i, 1, kernel_directory), 0, 0);
 
     /* Before we enable paging, we must register our page fault handler */
-    register_interrupt_handler(14, page_fault);
+    irq_register_handler(14, page_fault);
 
     /* Now, enable paging! */
     switch_page_directory(kernel_directory);

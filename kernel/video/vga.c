@@ -1,4 +1,4 @@
-#include "kernel/video/textmode.h"
+#include "kernel/video/vga.h"
 #include "kernel/lib/string.h"
 #include "kernel/arch/x86/ports.h"
 

@@ -151,6 +151,6 @@ static void keyboard_handler(registers_t *regs) {
 }
 
 /* Installs the keyboard handler into IRQ1 */
-void init_keyboard() {
-    register_interrupt_handler(IRQ1, &keyboard_handler);
+void keyboard_init() {
+    irq_register_handler(IRQ1, &keyboard_handler);
 }

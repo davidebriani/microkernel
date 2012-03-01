@@ -18,7 +18,7 @@ typedef struct task
 } task_t;
 
 /* Initialises the tasking system */
-void init_tasking(void);
+void tasking_init(void);
 
 /* Called by the timer hook, this changes the running process */
 void task_switch(void);
@@ -39,6 +39,6 @@ int32_t task_init(void func(void));
 int32_t task_kill(int32_t pid);
 
 /* Simulate a return from an exception that began in usermode */
-void init_usermode(void);
+void usermode_init(void);
 
 #endif

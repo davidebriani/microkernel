@@ -9,8 +9,8 @@ extern void idt_flush(uint32_t);
 extern void tss_flush(void);
 
 /* Internal function prototypes */
-static void init_gdt(void);
-static void init_idt(void);
+static void gdt_init(void);
+static void idt_init(void);
 static void gdt_set_gate(int32_t, uint32_t, uint32_t, uint8_t ,uint8_t);
 static void idt_set_gate(uint8_t, uint32_t, uint16_t, uint8_t);
 static void tss_write(int32_t, uint16_t, uint32_t);
@@ -29,16 +29,16 @@ idt_ptr_t   idt_ptr;
 tss_entry_t tss_entry;
 
 /* Here are the ISR handler array so we can nullify them on startup */
-extern isr_t interrupt_handlers[];
+extern isr_t irq_handlers[];
 
 /* Install the GDT and the IDT */
-void init_dt() {
+void dt_init() {
     /* Initialise the global descriptor table. */
-    init_gdt();
+    gdt_init();
     /* Initialise the interrupt descriptor table. */
-    init_idt();
+    idt_init();
     /* Nullify all the interrupt handlers. */
-    memset(&interrupt_handlers, 0, sizeof(isr_t)*256);
+    memset(&irq_handlers, 0, sizeof(isr_t)*256);
 }
 
 /* Should be called by main. This will setup the special GDT
@@ -46,7 +46,7 @@ void init_dt() {
 *  finally call gdt_flush() in our assembler file in order
 *  to tell the processor where the new GDT is and update the
 *  new segment registers */
-static void init_gdt() {
+static void gdt_init() {
     /* Setup the GDT pointer and limit */
     gdt_ptr.limit = (sizeof(gdt_entry_t) * 6) - 1;
     gdt_ptr.base  = (uint32_t)&gdt_entries;
@@ -78,7 +78,7 @@ static void gdt_set_gate(int32_t num, uint32_t base, uint32_t limit, uint8_t acc
 }
 
 /* Installs the IDT */
-static void init_idt() {
+static void idt_init() {
     /* Sets the special IDT pointer up */
     idt_ptr.limit = sizeof(idt_entry_t) * 256 -1;
     idt_ptr.base  = (uint32_t)&idt_entries;

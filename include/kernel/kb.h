@@ -4,7 +4,7 @@
 #include "kernel/stdint.h"
 
 /* Install a custom handler in the IDT for the keyboard */
-void init_keyboard(void);
+void keyboard_init(void);
 /* Get a char from the keyboard buffer */
 uint8_t kbd_buffer_read(void);
 /* How many chars are to be read from keyboard buffer? */

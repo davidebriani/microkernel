@@ -1,15 +1,15 @@
 #include "kernel/arch/x86/isr.h"
-#include "kernel/video/textmode.h"
+#include "kernel/video/vga.h"
 #include "kernel/arch/x86/ports.h"
 
 /* This array is actually an array of function pointers. We use
 *  this to handle custom IRQ handlers for a given IRQ */
-isr_t interrupt_handlers[256];
+isr_t irq_handlers[256];
 
 /* This is a simple string array. It contains the message that
 *  corresponds to each and every exception. We get the correct
 *  message by accessing like: exception_message[interrupt_numr] */
-const int8_t *exception_messages[] = {
+static const int8_t *exception_messages[] = {
     "Division By Zero",
     "Debug",
     "Non Maskable Interrupt",
@@ -44,13 +44,13 @@ const int8_t *exception_messages[] = {
 };
 
 /* This installs a custom IRQ handler for the given IRQ */
-void register_interrupt_handler(uint32_t n, isr_t handler) {
-    interrupt_handlers[n] = handler;
+void irq_register_handler(uint32_t n, isr_t handler) {
+    irq_handlers[n] = handler;
 }
 
 /* This clears the handler for the given IRQ */
-void remove_interrupt_handler(uint32_t n) {
-    interrupt_handlers[n] = 0;
+void irq_remove_handler(uint32_t n) {
+    irq_handlers[n] = 0;
 }
 
 /* This gets called from our ASM interrupt handler stub. */
@@ -61,8 +61,8 @@ void isr_handler(registers_t regs) {
     *  bit (0x80) is set, regs.int_no will be very large (about 0xffffff80). */
     uint8_t int_no = regs.int_no & 0xFF;
 
-    if (interrupt_handlers[int_no] != 0) {
-        isr_t handler = interrupt_handlers[int_no];
+    if (irq_handlers[int_no] != 0) {
+        isr_t handler = irq_handlers[int_no];
         handler(&regs);
     }
     else {
@@ -107,8 +107,8 @@ void irq_handler(registers_t regs) {
 
     /* Find out if we have a custom handler to run for this
     *  IRQ, and then finally, run it */
-    if (interrupt_handlers[regs.int_no] != 0) {
-        isr_t handler = interrupt_handlers[regs.int_no];
+    if (irq_handlers[regs.int_no] != 0) {
+        isr_t handler = irq_handlers[regs.int_no];
         handler(&regs);
     }
 

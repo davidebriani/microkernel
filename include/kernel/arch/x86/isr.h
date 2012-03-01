@@ -32,8 +32,8 @@ typedef struct registers {
 *  For IRQs, to ease confusion, use the #defines above as the
 *  first parameter. */
 typedef void (*isr_t)(registers_t*);
-void register_interrupt_handler(uint32_t n, isr_t handler);
-void remove_interrupt_handler(uint32_t n);
+void irq_register_handler(uint32_t n, isr_t handler);
+void irq_remove_handler(uint32_t n);
 void isr_handler(registers_t regs);
 void irq_handler(registers_t regs);
 
