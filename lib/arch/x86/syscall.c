@@ -1,4 +1,4 @@
-#include "lib/arch/x86/syscall.h"
+#include <lib/arch/x86/syscall.h>
 
 #define DEFN_SYSCALL0(fn, num) \
 uint32_t fn() \

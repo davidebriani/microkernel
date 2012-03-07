@@ -1,6 +1,6 @@
-#include "kernel/kb.h"
-#include "kernel/arch/x86/isr.h"
-#include "kernel/arch/x86/ports.h"
+#include <kernel/kb.h>
+#include <kernel/arch/x86/isr.h>
+#include <kernel/arch/x86/io.h>
 
 /* US lowercase keyboard keymap */
 uint8_t kbdMapLowerUS[128] = {
@@ -116,7 +116,7 @@ static void keyboard_handler(registers_t *regs) {
     uint8_t scancode;
 
     /* Read from the keyboard's data buffer */
-    scancode = inb(0x60);
+    scancode = io_inb(0x60);
 
     if (scancode == 0x2A)
 	kbdToggleShift = 1;

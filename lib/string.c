@@ -1,5 +1,5 @@
-#include "kernel/lib/string.h"
-#include "kernel/stdlib.h"
+#include <lib/string.h>
+#include <kernel/stdlib.h>
 
 void *memcpy(void *dest, const void *src, int32_t count) {
     const uint8_t *sp = (const uint8_t *)src;

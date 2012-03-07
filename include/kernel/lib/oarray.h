@@ -1,7 +1,7 @@
-#ifndef OARRAY_H
-#define OARRAY_H
+#ifndef KERNEL_LIB_OARRAY_H
+#define KERNEL_LIB_OARRAY_H
 
-#include "kernel/stdint.h"
+#include <kernel/stdint.h>
 
 /* This array is insertion sorted, it always remains in
 *  a sorted state (between calls). It can store anything

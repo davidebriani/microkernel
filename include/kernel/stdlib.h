@@ -1,5 +1,5 @@
-#ifndef STDLIB_H
-#define STDLIB_H
+#ifndef KERNEL_STDLIB_H
+#define KERNEL_STDLIB_H
 
 /* A few useful defines */
 #define NULL		0

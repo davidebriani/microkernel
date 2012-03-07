@@ -1,7 +1,7 @@
-#ifndef KB_H
-#define KB_H
+#ifndef KERNEL_KB_H
+#define KERNEL_KB_H
 
-#include "kernel/stdint.h"
+#include <kernel/stdint.h>
 
 /* Install a custom handler in the IDT for the keyboard */
 void keyboard_init(void);

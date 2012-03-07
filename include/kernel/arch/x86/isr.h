@@ -1,7 +1,7 @@
-#ifndef IRS_H
-#define IRS_H
+#ifndef KERNEL_ARCH_x86_IRS_H
+#define KERNEL_ARCH_x86_IRS_H
 
-#include "kernel/stdint.h"
+#include <kernel/stdint.h>
 
 /* A few defines to make life a little easier */
 #define IRQ0 32

@@ -1,7 +1,7 @@
-#ifndef STRING_H
-#define STRING_H
+#ifndef LIB_STRING_H
+#define LIB_STRING_H
 
-#include "kernel/stdint.h"
+#include <kernel/stdint.h>
 
 void *memcpy(void *dest, const void *src, int32_t count);
 void *memset(void *dest, uint8_t val, int32_t count);

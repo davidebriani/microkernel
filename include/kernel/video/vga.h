@@ -1,7 +1,7 @@
-#ifndef TEXTMODE_H
-#define TEXTMODE_H
+#ifndef KERNEL_VIDEO_VGA_H
+#define KERNEL_VIDEO_VGA_H
 
-#include "kernel/stdint.h"
+#include <kernel/stdint.h>
 
 /* Sets our text-mode VGA pointer and clears the screen */
 void vga_device_init(void);
@@ -39,35 +39,34 @@ struct vga_device
     unsigned int (*write_framebuffer)(struct vga_device *self, unsigned int offset, unsigned int count, void *buffer);
     void (*set_cursor_color)(struct vga_device *self, unsigned char fg, unsigned char bg);
     void (*set_cursor_offset)(struct vga_device *self, unsigned short offset);
-
 };
 
 #define VGA_FB_ADDRESS 0xB8000
 
 /* default pagination */
-#define COLS		80U
-#define ROWS		25U
+#define VGA_COLS	80U
+#define VGA_ROWS	25U
 
 /* type of video card */
-#define CARD_COLOR	1
-#define CARD_MONO	0
+#define VGA_CARD_COLOR	1
+#define VGA_CARD_MONO	0
 
 /* text color attribute */
-#define BLACK		0
-#define BLUE		1
-#define GREEN		2
-#define CYAN		3
-#define RED		4
-#define MAGENTA		5
-#define BROWN		6
-#define LIGHTGREY	7
-#define GREY		8
-#define LIGHTBLUE	9
-#define LIGHTGREEN	10
-#define LIGHTCYAN	11
-#define LIGHTRED	12
-#define LIGHTMAGENTA	13
-#define YELLOW		14
-#define WHITE		15
+#define VGA_BLACK	    0
+#define VGA_BLUE	    1
+#define VGA_GREEN	    2
+#define VGA_CYAN	    3
+#define VGA_RED		    4
+#define VGA_MAGENTA	    5
+#define VGA_BROWN	    6
+#define VGA_LIGHTGREY	    7
+#define VGA_GREY	    8
+#define VGA_LIGHTBLUE       9
+#define VGA_LIGHTGREEN	    10
+#define VGA_LIGHTCYAN	    11
+#define VGA_LIGHTRED	    12
+#define VGA_LIGHTMAGENTA    13
+#define VGA_YELLOW	    14
+#define VGA_WHITE	    15
 
 #endif

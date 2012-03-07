@@ -8,4 +8,5 @@ all: $(OBJFILES)
 	cd arch/$(ARCH) && make
 
 clean:
+	-@rm -f *.o
 	-@cd arch/$(ARCH) && make clean

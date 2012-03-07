@@ -1,8 +1,8 @@
-#include "kernel/kb.h"
-#include "kernel/shell.h"
-#include "kernel/lib/string.h"
-#include "lib/arch/x86/syscall.h"
-#include "kernel/video/vga.h"
+#include <kernel/kb.h>
+#include <kernel/shell.h>
+#include <lib/string.h>
+#include <lib/arch/x86/syscall.h>
+#include <kernel/video/vga.h>
 
 #define SHELL_BUFFER_SIZE 256
 #define SHELL_PROMPT "Shell:/$ "

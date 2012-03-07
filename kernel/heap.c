@@ -1,7 +1,7 @@
-#include "kernel/heap.h"
-#include "kernel/arch/x86/paging.h"
-#include "kernel/panic.h"
-#include "kernel/lib/oarray.h"
+#include <kernel/heap.h>
+#include <kernel/arch/x86/mmu.h>
+#include <kernel/panic.h>
+#include <kernel/lib/oarray.h>
 
 /* end is defined in the linker script */
 extern uint32_t end;

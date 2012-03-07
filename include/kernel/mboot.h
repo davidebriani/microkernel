@@ -1,7 +1,7 @@
-#ifndef MULTIBOOT_H
-#define MULTIBOOT_H
+#ifndef KERNEL_MULTIBOOT_H
+#define KERNEL_MULTIBOOT_H
 
-#include "kernel/stdint.h"
+#include <kernel/stdint.h>
 
 #define MULTIBOOT_MAGIC    0x2BADB002
 
@@ -17,7 +17,7 @@
 #define MULTIBOOT_FLAG_APM	0x200
 #define MULTIBOOT_FLAG_VBE	0x400
 
-struct multiboot
+struct multiboot_header
 {
     uint32_t flags;
     uint32_t mem_lower;
@@ -46,5 +46,7 @@ struct multiboot
 }  __attribute__((packed));
 
 typedef struct multiboot_header multiboot_header_t;
+
+void mboot_init(uint32_t magic, multiboot_header_t *header);
 
 #endif

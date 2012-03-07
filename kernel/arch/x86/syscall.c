@@ -1,8 +1,8 @@
-#include "kernel/stdint.h"
-#include "kernel/arch/x86/isr.h"
-#include "kernel/arch/x86/syscall.h"
-#include "lib/arch/x86/syscall.h"
-#include "kernel/video/vga.h"
+#include <kernel/stdint.h>
+#include <kernel/arch/x86/isr.h>
+#include <kernel/arch/x86/syscall.h>
+#include <lib/arch/x86/syscall.h>
+#include <kernel/video/vga.h>
 
 static void syscall_handler(registers_t *regs);
 

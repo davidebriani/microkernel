@@ -1,6 +1,6 @@
-#include "kernel/video/vga.h"
-#include "kernel/lib/string.h"
-#include "kernel/arch/x86/ports.h"
+#include <kernel/video/vga.h>
+#include <lib/string.h>
+#include <kernel/arch/x86/io.h>
 
 struct vga_device *device;
 
@@ -21,17 +21,17 @@ void vga_device_scroll(void) {
     blank = 0x20 | (device->attribute << 8);
 
     /* Row 25 is the end, this means we need to scroll up */
-    if(device->cursorY >= ROWS)
+    if(device->cursorY >= VGA_ROWS)
     {
         /* Move the current text chunk that makes up the screen
         *  back in the buffer by a line */
-        temp = device->cursorY - ROWS + 1;
-        memcpy(device->address, device->address + temp * COLS, (ROWS - temp) * COLS * 2);
+        temp = device->cursorY - VGA_ROWS + 1;
+        memcpy(device->address, device->address + temp * VGA_COLS, (VGA_ROWS - temp) * VGA_COLS * 2);
 
         /* Finally, we set the chunk of memory that occupies
         *  the last line of text to our 'blank' character */
-        memsetw(device->address + (ROWS - temp) * COLS, blank, COLS);
-        device->cursorY = ROWS - 1;
+        memsetw(device->address + (VGA_ROWS - temp) * VGA_COLS, blank, VGA_COLS);
+        device->cursorY = VGA_ROWS - 1;
     }
 }
 
@@ -43,7 +43,7 @@ void vga_device_cursor_move(void) {
     /* The equation for finding the index in a linear
     *  chunk of memory can be represented by:
     *  Index = [(y * width) + x] */
-    temp = device->cursorY * COLS + device->cursorX;
+    temp = device->cursorY * VGA_COLS + device->cursorX;
 
     /* This sends a command to indicies 14 and 15 in the
     *  CRT Control Register of the VGA controller. These
@@ -52,10 +52,10 @@ void vga_device_cursor_move(void) {
     *  learn more, you should look up some VGA specific
     *  programming documents. A great start to graphics:
     *  http://www.brackeen.com/home/vga */
-    outb(0x3D4, 14);
-    outb(0x3D5, temp >> 8);
-    outb(0x3D4, 15);
-    outb(0x3D5, temp);
+    io_outb(0x3D4, 14);
+    io_outb(0x3D5, temp >> 8);
+    io_outb(0x3D4, 15);
+    io_outb(0x3D5, temp);
 }
 
 /* Clears the screen */
@@ -69,8 +69,8 @@ void vga_device_clear() {
 
     /* Sets the entire screen to spaces in our current
     *  color */
-    for(i = 0; i < ROWS; i++)
-        memsetw(device->address + i * COLS, blank, COLS);
+    for(i = 0; i < VGA_ROWS; i++)
+        memsetw(device->address + i * VGA_COLS, blank, VGA_COLS);
 
     /* Update out virtual cursor, and then move the
     *  hardware cursor */
@@ -98,14 +98,15 @@ void vga_device_init(void) {
     device->cursorX = 0;
     device->cursorY = 0;
     vga_device_clear();
+    vga_device_cursor_set_color(VGA_WHITE, VGA_BLACK);
 }
 
 /* Detects installed graphics card type. Returns:
-*  CARD_MONO	if monochromatic card
-*  CARD_COLOR	if color card */
+*  VGA_CARD_MONO	if monochromatic card
+*  VGA_CARD_COLOR	if color card */
 static uint8_t detect_video(void) {
     uint8_t c = (*((uint16_t *) 0x410) & 0x30);
-    return c?CARD_MONO:CARD_COLOR;
+    return c?VGA_CARD_MONO:VGA_CARD_COLOR;
 }
 
 /* Puts a single character on the screen */
@@ -117,7 +118,7 @@ void putc(const int8_t c) {
     if (c == '\b') {
         if (device->cursorX != 0) {
 	    device->cursorX--;
-	    where = device->address + (device->cursorY * COLS + device->cursorX);
+	    where = device->address + (device->cursorY * VGA_COLS + device->cursorX);
 	    *where = ' ' | att;
 	}
     }
@@ -141,14 +142,14 @@ void putc(const int8_t c) {
     *  in a linear chunk of memory can be represented by:
     *  Index = [(y * width) + x] */
     else if (c >= ' ') {
-        where = device->address + (device->cursorY * COLS + device->cursorX);
+        where = device->address + (device->cursorY * VGA_COLS + device->cursorX);
         *where = c | att;	/* Character AND attributes: color */
         device->cursorX++;
     }
 
     /* If the cursor has reached the edge of the screen's width, we
     *  insert a new line in there */
-    if (device->cursorX >= COLS) {
+    if (device->cursorX >= VGA_COLS) {
         device->cursorX = 0;
         device->cursorY++;
     }

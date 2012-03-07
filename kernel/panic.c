@@ -1,6 +1,5 @@
-#include "kernel/panic.h"
-#include "kernel/video/vga.h"
-#include "kernel/arch/x86/system.h"
+#include <kernel/panic.h>
+#include <kernel/video/vga.h>
 
 static void panic_do(const int8_t *file, uint32_t line)
 {
@@ -8,13 +7,13 @@ static void panic_do(const int8_t *file, uint32_t line)
     kprintf("# SYSTEM HALTED!\n");
 
     /* Disable interrupts */
-    cli();
+    kernel_disable_interrupts();
 
     /* Halt by going into an infinite loop */
     for(;;);
 
     /* Just in case... */
-    halt();
+    kernel_halt();
 }
 
 void panic(const int8_t *message, const int8_t *file, uint32_t line)

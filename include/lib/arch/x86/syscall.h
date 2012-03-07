@@ -1,7 +1,7 @@
-#ifndef LIB_SYSCALL_H
-#define LIB_SYSCALL_H
+#ifndef LIB_ARCH_X86_SYSCALL_H
+#define LIB_ARCH_X86_SYSCALL_H
 
-#include "kernel/stdint.h"
+#include <kernel/stdint.h>
 
 #define SYSCALL_SLOTS 256
 #define SYSCALL_PUTS 0x00

@@ -1,5 +1,5 @@
-#ifndef STDINT_H
-#define STDINT_H
+#ifndef KERNEL_STDINT_H
+#define KERNEL_STDINT_H
 
 /* Some nice typedefs, to standardise sizes across platforms.
 *  These typedefs are written for 32-bit X86. */

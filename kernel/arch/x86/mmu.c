@@ -1,8 +1,8 @@
-#include "kernel/arch/x86/paging.h"
-#include "kernel/heap.h"
-#include "kernel/lib/string.h"
-#include "kernel/video/vga.h"
-#include "kernel/panic.h"
+#include <kernel/arch/x86/mmu.h>
+#include <kernel/heap.h>
+#include <lib/string.h>
+#include <kernel/video/vga.h>
+#include <kernel/panic.h>
 
 /* The kernel's page directory */
 page_directory_t *kernel_directory = 0;
@@ -105,7 +105,7 @@ void free_frame(page_t *page)
     }
 }
 
-void paging_init()
+void mmu_init()
 {
     /* The size of physical memory. For the moment we
     *  assume it is 16MB big. */

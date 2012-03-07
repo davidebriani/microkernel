@@ -1,7 +1,7 @@
-#ifndef PANIC_H
-#define PANIC_H
+#ifndef KERNEL_PANIC_H
+#define KERNEL_PANIC_H
 
-#include "kernel/stdint.h"
+#include <kernel/stdint.h>
 
 #define PANIC(msg)	panic(msg, __FILE__, __LINE__)
 #define ASSERT(a)	((a) ? (void)0 : panic_assert(#a, __FILE__, __LINE__))

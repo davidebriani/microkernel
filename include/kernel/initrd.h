@@ -1,8 +1,8 @@
-#ifndef INITRD_H
-#define INITRD_H
+#ifndef KERNEL_INITRD_H
+#define KERNEL_INITRD_H
 
-#include "kernel/stdint.h"
-#include "kernel/fs/vfs.h"
+#include <kernel/stdint.h>
+#include <kernel/fs/vfs.h>
 
 typedef struct
 {

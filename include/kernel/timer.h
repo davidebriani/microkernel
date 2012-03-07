@@ -1,7 +1,7 @@
-#ifndef TIMER_H
-#define TIMER_H
+#ifndef KERNEL_TIMER_H
+#define KERNEL_TIMER_H
 
-#include "kernel/stdint.h"
+#include <kernel/stdint.h>
 
 #define TIMER_FREQ		1000
 #define SWITCH_TASK_FREQ	50

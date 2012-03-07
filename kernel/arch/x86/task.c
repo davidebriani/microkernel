@@ -1,9 +1,10 @@
-#include "kernel/arch/x86/task.h"
-#include "kernel/arch/x86/dt.h"
-#include "kernel/arch/x86/paging.h"
-#include "kernel/heap.h"
-#include "kernel/lib/string.h"
-#include "kernel/timer.h"
+#include <kernel/arch/x86/task.h>
+#include <kernel/arch/x86/dt.h>
+#include <kernel/arch/x86/mmu.h>
+#include <kernel/arch/x86/cpu.h>
+#include <kernel/heap.h>
+#include <lib/string.h>
+#include <kernel/timer.h>
 
 /* The currently running task */
 volatile task_t *current_task;
@@ -20,10 +21,10 @@ extern uint32_t read_eip(void);
 /* The next available process ID */
 uint32_t next_pid = 1;
 
-void init_tasking()
+void tasking_init()
 {
     /* Rather important stuff happening, no interrupts please! */
-    __asm__ __volatile__("cli");
+    cpu_disable_interrupts();
 
     /* Relocate the stack so we know where it is */
     move_stack((void *) 0xE0000000, 0x2000);
@@ -38,7 +39,7 @@ void init_tasking()
     current_task->kernel_stack = kmalloc_a(KERNEL_STACK_SIZE);
 
     /* Reenable interrupts */
-    __asm__ __volatile__("sti");
+    cpu_enable_interrupts();
 }
 
 void move_stack(void *new_stack_start, uint32_t size)
@@ -161,7 +162,7 @@ void task_switch()
 int32_t fork()
 {
     /* We are modifying kernel structures, and so cannot */
-    __asm__ __volatile__("cli");
+    cpu_disable_interrupts();
 
     /* Take a pointer to this process' task struct for later reference */
     task_t *parent_task = (task_t *) current_task;
@@ -198,7 +199,7 @@ int32_t fork()
 	new_task->esp = esp;
 	new_task->ebp = ebp;
 	new_task->eip = eip;
-	__asm__ __volatile__("sti");
+	cpu_enable_interrupts;
 
 	return new_task->id;
     }

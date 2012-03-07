@@ -1,6 +1,6 @@
-#include "kernel/arch/x86/isr.h"
-#include "kernel/video/vga.h"
-#include "kernel/arch/x86/ports.h"
+#include <kernel/arch/x86/isr.h>
+#include <kernel/video/vga.h>
+#include <kernel/arch/x86/io.h>
 
 /* This array is actually an array of function pointers. We use
 *  this to handle custom IRQ handlers for a given IRQ */
@@ -100,10 +100,10 @@ void irq_handler(registers_t regs) {
     *  the slave controller */
     if (regs.int_no >= 40) {
         /* Send reset signal to slave. */
-        outb(0xA0, 0x20);
+        io_outb(0xA0, 0x20);
     }
     /* Send reset signal to master. (As well as slave, if necessary). */
-    outb(0x20, 0x20);
+    io_outb(0x20, 0x20);
 
     /* Find out if we have a custom handler to run for this
     *  IRQ, and then finally, run it */

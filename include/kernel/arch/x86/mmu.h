@@ -1,8 +1,8 @@
-#ifndef PAGING_H
-#define PAGING_H
+#ifndef KERNEL_ARCH_x86_MMU_H
+#define KERNEL_ARCH_x86_MMU_H
 
-#include "kernel/stdint.h"
-#include "kernel/arch/x86/isr.h"
+#include <kernel/stdint.h>
+#include <kernel/arch/x86/isr.h>
 
 typedef struct page
 {
@@ -37,7 +37,7 @@ typedef struct page_directory
 
 /* Sets up the environment, page directories etc and
 *  enables paging. */
-void paging_init(void);
+void mmu_init(void);
 
 /* Causes the specified page directory to be loaded into the
 *  CR3 register. */

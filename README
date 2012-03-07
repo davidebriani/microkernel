@@ -16,7 +16,7 @@ Dependencies (tools it is known to work with)
     GNU ld	2.22
     GNU Make	3.81
 
-    Qemu	0.15.1
+    Qemu	1.0
 
 
 
@@ -32,19 +32,19 @@ Build Instructions
 TODO
 ====
 
-    * multitasking fixes
-    * source, makefile & linker script fixes
-    * keyboard stuff, keymaps -> shell, command completion & history prototypes
+    * mmu stuff + multitasking fixes (or rewriting)
+    * cleanups
     * vfs functions & file editing improvements
+    * elf loading
+    * drivers, modules,
+    * keyboard stuff, keymaps
+    * shell, command completion & history prototypes
+    * setup a working fs system
     * newlib port? libgcc port?
-    * handy functions: rnd(), md5sum(), etc.
-    * elf programs
-    * useful shell with programs, command completion & history, basic shell scripting
-    * shell scrolling (save long outputs in buffers)
+    * standard library and handy functions: rnd(), md5sum(), etc.
+    * binutils port
+    * ext2, fat fs
     * tcp/ip, etc.
-    * fat fs
-    * ext2
-    * ipc?
     * pci, usb, etc.
     * mouse
     * graphical interface, vesa

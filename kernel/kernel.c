@@ -1,86 +1,57 @@
-#include "kernel/kernel.h"
+#include <kernel/kernel.h>
+#include <kernel/fs/vfs.h>
 
 extern uint32_t placement_address;
-uint32_t initial_esp;
+static kernel_arch *kernelArch;
 
-static void kernel_init(uint32_t mboot_magic, struct multiboot *mboot_ptr, uint32_t initial_stack);
 static void kernel_test(void);
-static void kernel_halt(void);
 
-int main(uint32_t mboot_magic, struct multiboot *mboot_ptr, uint32_t initial_stack)
+void kernel_init(kernel_arch *arch)
 {
-    kernel_init(mboot_magic, mboot_ptr, initial_stack);
-
-    shell_init();
-
-    kernel_halt();
-
-    return 0;
-}
-
-static void kernel_init(uint32_t mboot_magic, struct multiboot *mboot_ptr, uint32_t initial_stack) {
-    initial_esp = initial_stack;
-
-    /* Setup all the ISRs and segmentation */
-    dt_init();
-
-    /* Enable Interrupts */
-    sti();
-
     /* Setup the screen (by clearing it) */
     vga_device_init();
-    vga_device_cursor_set_color(WHITE, BLACK);
-
-    if (mboot_magic != MULTIBOOT_MAGIC)
-	PANIC("Not a multiboot-compliant boot loader.");
-
-    puts("# GDT.................. OK\n");
-    puts("# IDT.................. OK\n");
     puts("# Screen (text mode)... OK\n");
 
-    /* Init the system timer */
+    kernelArch = arch;
+    if (!kernelArch)
+	PANIC("No registered architecture.");
+
+    /* Setup architecture-dep. stuff */
+    if (kernelArch->setup)
+	kernelArch->setup();
+    puts("# GDT & IDT............ OK\n");
+    puts("# Paging............... OK\n");
+
+    /* Init the system timer: will be a loadable module */
     timer_init();
     puts("# Timer/Clock.......... OK\n");
 
-    /* Init the keyboard */
+    /* Init the keyboard: will be a loadable module */
     keyboard_init();
     puts("# Keyboard (US)........ OK\n");
 
-    /* Find the location of our initial ramdisk which should have
-    *  been loaded as a module by the boot loader */
-    ASSERT(mboot_ptr->mods_count > 0);
-    uint32_t initrd_location = *((uint32_t *)mboot_ptr->mods_addr);
-    uint32_t initrd_end = *(uint32_t *)(mboot_ptr->mods_addr + 4);
-    /* Don't trample our module with placement accesses, please! */
-    placement_address = initrd_end;
-
-    /* Initialise the initial ramdisk, and set it as the filesystem root */
-    fs_root = initrd_init(initrd_location);
-
-    /* Setup paging */
-    paging_init();
-    puts("# Paging............... OK\n");
-
-#if DEBUG
+#if KERNEL_DEBUG
     kernel_test();
-#endif
-
-#if TEST
-    /* Setup multitasking */
-    tasking_init();
-    puts("# Multitasking......... OK\n");
 #endif
 
     /* Setup syscalls */
     syscalls_init();
     syscall_puts("# Syscalls............. OK\n");
 
-#if TEST
+#if KERNEL_TEST
+    /* Setup multitasking */
+    tasking_init();
+    syscall_puts("# Multitasking......... OK\n");
+
     /* Switch to user mode */
     usermode_init();
     syscall_puts("# Usermode..............OK\n");
 #endif
 
+    /* Init a demo shell: will be a loadable exec. */
+    shell_init();
+
+    kernel_halt();
 }
 
 static void kernel_test(void) {
@@ -100,7 +71,7 @@ static void kernel_test(void) {
     __asm__ __volatile__("int $0x0");
     __asm__ __volatile__("int $0x3");
     /* Important! Re-enable interrupt requests */
-    sti();
+    kernel_enable_interrupts();
 
     /* Check if something went wrong with paging and heap setup */
     puts("# Testing the heap.....\n");
@@ -137,7 +108,21 @@ static void kernel_test(void) {
     }
 }
 
-static void kernel_halt(void) {
+void kernel_halt() {
     syscall_puts("\n# System halted.........OK");
-    halt();
+    kernelArch->halt();
+}
+
+void kernel_reboot() {
+    syscall_puts("\n# System rebooting......OK");
+    kernelArch->reboot();
+}
+
+void kernel_disable_interrupts() {
+    kernelArch->disable_interrupts();
+
+}
+
+void kernel_enable_interrupts() {
+    kernelArch->enable_interrupts();
 }

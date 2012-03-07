@@ -1,8 +1,8 @@
-#include "kernel/timer.h"
-#include "kernel/arch/x86/isr.h"
-#include "kernel/arch/x86/ports.h"
-#include "kernel/panic.h"
-#include "kernel/arch/x86/task.h"
+#include <kernel/timer.h>
+#include <kernel/arch/x86/isr.h>
+#include <kernel/arch/x86/io.h>
+#include <kernel/panic.h>
+#include <kernel/arch/x86/task.h>
 
 /* This will keep track of how many ticks that the system has been running for */
 uint32_t timer_ticks = 0;
@@ -36,9 +36,9 @@ void timer_phase(uint32_t hz) {
     *  (1193180 Hz) by, to get our required frequency. Important to note is
     *  that the divisor must be small enough to fit into 16-bits. */
     uint32_t divisor = 1193180 / hz;			/* Calculate our divisor */
-    outb(0x43, 0x36);					/* Send our command byte 0x36 */
-    outb(0x40, (uint8_t)(divisor & 0xFF));		/* Set low byte of divisor */
-    outb(0x40, (uint8_t)((divisor >> 8) & 0xFF));	/* Set high byte of divisor */
+    io_outb(0x43, 0x36);				/* Send our command byte 0x36 */
+    io_outb(0x40, (uint8_t)(divisor & 0xFF));		/* Set low byte of divisor */
+    io_outb(0x40, (uint8_t)((divisor >> 8) & 0xFF));	/* Set high byte of divisor */
 }
 
 /* System uptime in seconds */

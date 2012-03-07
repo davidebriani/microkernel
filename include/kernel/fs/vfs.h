@@ -1,7 +1,7 @@
-#ifndef VFS_H
-#define VFS_H
+#ifndef KERNEL_FS_VFS_H
+#define KERNEL_FS_VFS_H
 
-#include "kernel/stdint.h"
+#include <kernel/stdint.h>
 
 #define FS_FILE		0x01
 #define FS_DIRECTORY	0x02

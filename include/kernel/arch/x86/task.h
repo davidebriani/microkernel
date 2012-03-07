@@ -1,8 +1,8 @@
-#ifndef TASK_H
-#define TASK_H
+#ifndef KERNEL_ARCH_x86_TASK_H
+#define KERNEL_ARCH_x86_TASK_H
 
-#include "kernel/stdint.h"
-#include "kernel/arch/x86/paging.h"
+#include <kernel/stdint.h>
+#include <kernel/arch/x86/mmu.h>
 
 #define KERNEL_STACK_SIZE    2048    /* Use a 2kb kernel stack */
 
