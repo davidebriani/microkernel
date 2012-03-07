@@ -1,7 +1,6 @@
 #include <kernel/kernel.h>
 #include <kernel/fs/vfs.h>
 
-extern uint32_t placement_address;
 static kernel_arch *kernelArch;
 
 static void kernel_test(void);
@@ -16,11 +15,12 @@ void kernel_init(kernel_arch *arch)
     if (!kernelArch)
 	PANIC("No registered architecture.");
 
+    mboot_init(kernelArch->magic, kernelArch->mboot);
+
     /* Setup architecture-dep. stuff */
     if (kernelArch->setup)
 	kernelArch->setup();
     puts("# GDT & IDT............ OK\n");
-    puts("# Paging............... OK\n");
 
     /* Init the system timer: will be a loadable module */
     timer_init();
@@ -29,6 +29,10 @@ void kernel_init(kernel_arch *arch)
     /* Init the keyboard: will be a loadable module */
     keyboard_init();
     puts("# Keyboard (US)........ OK\n");
+
+    if (kernelArch->setup_mmu)
+	kernelArch->setup_mmu();
+    puts("# Paging............... OK\n");
 
 #if KERNEL_DEBUG
     kernel_test();
