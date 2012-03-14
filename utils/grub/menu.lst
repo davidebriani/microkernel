@@ -4,6 +4,12 @@ default 0
 # after 3 seconds boot default
 timeout 3
 
+# set text colors
+foreground ffffff
+background 000000
+# set background image - it DOESN'T work with bochs!
+#splashimage (fd0)/boot/grub/splash.xpm.gz
+
 # My microkernel! - first entry
 title	My microkernel!
 root    (fd0)

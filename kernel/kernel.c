@@ -55,7 +55,7 @@ void kernel_init(kernel_arch *arch)
     /* Init a demo shell: will be a loadable exec. */
     shell_init();
 
-    kernel_halt();
+    kernel_reboot();
 }
 
 static void kernel_test(void) {
@@ -113,12 +113,16 @@ static void kernel_test(void) {
 }
 
 void kernel_halt() {
-    syscall_puts("\n# System halted.........OK");
+    syscall_puts("\n# System will halt in 2 seconds... ");
+    sleep(2);
+    syscall_puts("OK");
     kernelArch->halt();
 }
 
 void kernel_reboot() {
-    syscall_puts("\n# System rebooting......OK");
+    syscall_puts("\n# System will reboot in 2 seconds... ");
+    sleep(2);
+    syscall_puts("OK");
     kernelArch->reboot();
 }
 

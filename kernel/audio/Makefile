@@ -7,4 +7,4 @@ CFLAGS += -I$(ROOTDIR)/include
 all: $(OBJFILES)
 
 clean:
-	-@rm *.o
+	-@rm -f *.o

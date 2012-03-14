@@ -170,6 +170,7 @@ void switch_page_directory(page_directory_t *dir)
     __asm__ __volatile__("mov %0, %%cr3":: "r"(dir->physicalAddr));
     __asm__ __volatile__("mov %%cr0, %0": "=r"(cr0));
     cr0 |= 0x80000000;	/* Enable paging! */
+    /* __asm__ __volatile__("xchg %bx, %bx"); */
     __asm__ __volatile__("mov %0, %%cr0":: "r"(cr0));
 }
 
@@ -207,19 +208,22 @@ void page_fault(registers_t *regs)
     __asm__ __volatile__("mov %%cr2, %0" : "=r" (faulting_address));
 
     /* The error code gives us details of what happened. */
-    present = !(regs->err_code & 0x1);	/* Page not present */
+    present = (regs->err_code & 0x1);	/* Page present */
     rw = regs->err_code & 0x2;		/* Write operation? */
     us = regs->err_code & 0x4;		/* Processor was in user-mode? */
     reserved = regs->err_code & 0x8;	/* Overwritten CPU-reserved bits of page entry? */
     id = regs->err_code & 0x10;		/* Caused by an instruction fetch? */
 
     /* Output an error message */
-    kprintf("\nPage fault ( ");
-    if (present)	kprintf("present ");
-    if (rw)		kprintf("read-only ");
-    if (us)		kprintf("user-mode ");
-    if (reserved)	kprintf("reserved ");
-    kprintf(") at 0x%x; EIP=0x%x!\n", faulting_address, regs->eip);
+    kprintf("\n# Page fault at 0x%x; EIP=0x%x!\n", faulting_address, regs->eip);
+    if (present)	kprintf("# The page was present.\n");
+    if (!present)	kprintf("# The page was not present.\n");
+    if (rw)		kprintf("# A Write operation caused the fault.\n");
+    if (!rw)		kprintf("# A Read operation caused the fault.\n");
+    if (us)		kprintf("# The processor was in user-mode.\n");
+    if (!us)		kprintf("# The processor was in kernel-mode.\n");
+    if (reserved)	kprintf("# The page's reserved bits were overwritten.\n");
+    if (id)		kprintf("# An istruction fetch caused the fault.\n");
     PANIC("Page fault");
 }
 

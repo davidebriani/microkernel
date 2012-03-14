@@ -12,7 +12,7 @@ all: $(OBJFILES)
 	cd audio && make
 
 clean:
-	-@rm *.o
+	-@rm -f *.o
 	-@cd arch/$(ARCH) && make clean
 	-@cd lib && make clean
 	-@cd video && make clean

@@ -24,17 +24,21 @@ image: kernel floppy.img initrd.img
 	sudo mount /dev/loop0 /mnt
 	sudo cp microkernel /mnt/kernel
 	sudo cp initrd.img /mnt/initrd
-	sudo cp utils/menu.lst /mnt/boot/grub/
+	sudo cp utils/grub/menu.lst /mnt/boot/grub/
+	sudo cp utils/grub/metro.xpm.gz /mnt/boot/grub/splash.xpm.gz
 	sudo umount /dev/loop0
 	sudo /sbin/losetup -d /dev/loop0
 
 clean:
-	-@rm microkernel initrd.img
+	-@rm -f microkernel initrd.img *.log
 	-@cd kernel && make clean
 	-@cd lib && make clean
 	-@cd utils/initrd && make clean
 
-run: $(VM)
+run: floppy.img $(VM)-$(ARCH)
 
-qemu: floppy.img
-	qemu -soundhw pcspk -fda floppy.img
+bochs-x86:
+	bochs -qf utils/bochsrc.txt
+
+qemu-x86:
+	qemu -cpu 486 -smp 1,cores=1,threads=1 -m 32 -k it -soundhw pcspk -fda floppy.img >qemu.log

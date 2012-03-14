@@ -1,0 +1,10 @@
+display_library: term
+megs: 32
+vgaromimage: file=/usr/share/bochs/VGABIOS-lgpl-latest
+floppya: 1_44=floppy.img, status=inserted
+boot: a
+log: bochs.log
+mouse: enabled=0
+clock: sync=realtime
+cpu: ips=500000
+

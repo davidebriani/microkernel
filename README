@@ -1,60 +1,96 @@
-Yet another (micro?)kernel
-==========================
+## Yet another (micro?)kernel
 
 Licensed under the terms of the MIT Licence: see LICENSE file for details.
 
-This is not a true, functional kernel or OS. This is a toy to play with: I'm trying to learn something about kernel's land and I came up with this; you'll forgive me for being such a newbie...
+This is not a true, functional kernel or OS. This is a toy to play with: It am trying to learn something interesting about kernels and how they work and I came up with this; you'll forgive me for being such a newbie...
 The... thing is currently designed for x86 cpu only, gets started by GRUB (or any other multiboot compliant bootloader), and works in Protected Mode. It's in a very early state of development and, of course, it is absolutely not useful.
 
 
 
-Dependencies (tools it is known to work with)
-=============================================
+## Dependencies (tools it is known to work with)
 
-    GNU gcc	4.6.2-12
+    GNU gcc	4.6.3-1
     Nasm	2.09.10
     GNU ld	2.22
     GNU Make	3.81
 
+    Optional:
     Qemu	1.0
+    Bochs	2.4.6
 
 
 
-Build Instructions
-==================
+## Build Instructions
 
     make	(compile and glue together source files)
     make image	(create a bootable image; will need 'sudo')
-    make run	(boot and test the image; will need 'qemu')
+    make run	(boot and test the image; will need 'qemu' or 'bochs')
 
 
 
-TODO
-====
+## TODO
+
+### General
 
     * mmu stuff + multitasking fixes (or rewriting)
     * cleanups
     * vfs functions & file editing improvements
-    * elf loading
-    * drivers, modules,
-    * keyboard stuff, keymaps
-    * shell, command completion & history prototypes
-    * setup a working fs system
-    * newlib port? libgcc port?
-    * standard library and handy functions: rnd(), md5sum(), etc.
-    * binutils port
-    * ext2, fat fs
-    * tcp/ip, etc.
-    * pci, usb, etc.
-    * mouse
-    * graphical interface, vesa
-    * etc. etc. etc...
-    * tons of manuals to read!
+
+### VFS Layer
+
+    * think about a good design
+    * API for underlying filesystems
+    * mounting, unmounting, mount lists
+    * caches (vnode, etc.)
+
+### Multitasking
+
+    * ELF executable & relocatable loading
+    * process synchronization (mutexes, semaphores)
+    * priority based scheduling
+
+### Newlib - libc port
+
+    * Basic syscalls
+    * UNIX syscalls
+    * POSIX syscalls
+
+### Drivers
+
+    * driver manager?
+    * drivers & modules registration
+    * IRQ registration
+    * DMA registration
+    * I/O request layer (independent of VFS)
+    * I/O request queue
+
+### Disk
+
+    * CD-ROM drive support (ATAPI devices)
+    * ATA
+    * Floppy
+    * Block cache system
+    * Disk DMA support
+
+### PCI bus
+
+    * PCI configuration
+    * PCI bus layer
+
+### Networking
+
+    * TCP/IP stack (Ethernet, ARP, IP, ICMP, UDP, TCP)
+    * Card drivers
+
+### Other
+
+    * port binutils, gcc
+    * port bash shell
+    * vesa driver, graphical interface
 
 
 
-Documents/links
-===============
+## Documents/links
 
 There is no documentation for this project yet.
 
