@@ -1,5 +1,4 @@
 #include <kernel/kernel.h>
-#include <kernel/fs/vfs.h>
 
 static kernel_arch *kernelArch;
 
@@ -34,6 +33,12 @@ void kernel_init(kernel_arch *arch)
 	kernelArch->setup_mmu();
     puts("# Paging............... OK\n");
 
+    vfs_init();
+    puts("# VFS...................OK\n");
+
+    ramdisk_init(kernelArch->ramdiskc, kernelArch->ramdiskv);
+    puts("# Initrd................OK\n");
+
 #if KERNEL_DEBUG
     kernel_test();
 #endif
@@ -59,6 +64,9 @@ void kernel_init(kernel_arch *arch)
 }
 
 static void kernel_test(void) {
+    void *a, *b, *c, *d;
+    int8_t temp[0x100];
+
     puts("# Testing timer........\n");
     sleep(1);
 
@@ -79,36 +87,28 @@ static void kernel_test(void) {
 
     /* Check if something went wrong with paging and heap setup */
     puts("# Testing the heap.....\n");
-    void *a = (void *) kmalloc(8);
-    void *b = (void *) kmalloc(8);
-    void *c = (void *) kmalloc(8);
+    a = (void *) kmalloc(8);
+    b = (void *) kmalloc(8);
+    c = (void *) kmalloc(8);
     kprintf("a: 0x%x\n", a);
     kprintf("b: 0x%x\n", b);
     kprintf("c: 0x%x\n", c);
     kfree(c);
     kfree(b);
-    void *d = (void *) kmalloc(12);
+    d = (void *) kmalloc(12);
     kprintf("d: 0x%x\n", d);
     kfree(a);
     kfree(d);
 
     /* Try to read files from the ramdisk image */
-    puts("# Testing initrd.img...\n");
-    /* list the contents of / */
-    int32_t i = 0;
-    struct dirent *node = 0;
-    while ( (node = readdir(fs_root, i)) != 0)
-    {
-	fs_node_t *fsnode = finddir(fs_root, node->name);
-	if ((fsnode->flags & 0x7) == FS_DIRECTORY)
-	    kprintf("dr--r--r--\t%s\n", node->name);
-	else
-	{
-	    uint8_t buf[256] = { 0 };
-	    fread(fsnode, 0, 256, buf);
-	    kprintf("-r--r--r--\t%s\t\"%s\"\n", node->name, buf);
-	}
-	i++;
+    puts("# Testing initrd.......\n");
+    if (vfs_open("/ramdisk/boot/sample.txt")) {
+	vfs_read("/ramdisk/boot/sample.txt", 0, 0x100, temp);
+	vfs_close("/ramdisk/boot/sample.txt");
+	puts("/ramdisk/boot/sample.txt: ");
+	puts(temp);
+    } else {
+	puts("Couldn't open /ramdisk/boot/sample.txt\n");
     }
 }
 

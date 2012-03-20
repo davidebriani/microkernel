@@ -1,4 +1,5 @@
 #include <kernel/panic.h>
+#include <kernel/kernel.h>
 #include <kernel/video/vga.h>
 
 static void panic_do(const int8_t *file, uint32_t line)

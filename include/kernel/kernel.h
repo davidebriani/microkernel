@@ -6,16 +6,16 @@
 #include <kernel/panic.h>
 #include <kernel/timer.h>
 #include <kernel/audio/speaker.h>
-#include <kernel/fs/vfs.h>
-/*
+#include <kernel/vfs.h>
+#include <kernel/ramdisk.h>
 #include <kernel/video/vga.h>
 #include <kernel/kb.h>
 #include <kernel/heap.h>
 #include <kernel/arch/x86/task.h>
 #include <kernel/arch/x86/syscall.h>
 #include <kernel/shell.h>
-*/
-#define KERNEL_DEBUG 0
+
+#define KERNEL_DEBUG 1
 #define KERNEL_TEST  0
 
 typedef struct kernel_arch {
@@ -28,8 +28,8 @@ typedef struct kernel_arch {
     void (*reboot)(void);
     void (*halt)(void);
     void *stack;
-    uint32_t initrdc;
-    uint32_t initrdv;
+    uint32_t ramdiskc;
+    void **ramdiskv;
     multiboot_header_t *mboot;
     uint32_t magic;
 } kernel_arch;

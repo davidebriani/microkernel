@@ -17,23 +17,23 @@ link: compile $(OBJFILES)
 compile:
 	cd kernel && make
 	cd lib && make
-	cd utils/initrd && make
+	cd build/ramdisk/ && tar -cvf initrd.tar *
+	mv build/ramdisk/initrd.tar .
 
-image: kernel floppy.img initrd.img
+image: kernel floppy.img initrd.tar
 	sudo /sbin/losetup /dev/loop0 floppy.img
 	sudo mount /dev/loop0 /mnt
-	sudo cp microkernel /mnt/kernel
-	sudo cp initrd.img /mnt/initrd
+	sudo cp microkernel /mnt/boot/kernel
+	sudo cp initrd.tar /mnt/boot/initrd.tar
 	sudo cp utils/grub/menu.lst /mnt/boot/grub/
 	sudo cp utils/grub/metro.xpm.gz /mnt/boot/grub/splash.xpm.gz
 	sudo umount /dev/loop0
 	sudo /sbin/losetup -d /dev/loop0
 
 clean:
-	-@rm -f microkernel initrd.img *.log
+	-@rm -f microkernel initrd.tar *.log
 	-@cd kernel && make clean
 	-@cd lib && make clean
-	-@cd utils/initrd && make clean
 
 run: floppy.img $(VM)-$(ARCH)
 

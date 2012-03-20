@@ -8,7 +8,7 @@ all: $(OBJFILES)
 	cd arch/$(ARCH) && make
 	cd lib && make
 	cd video && make
-	cd fs && make
+	cd vfs && make
 	cd audio && make
 
 clean:
@@ -16,5 +16,5 @@ clean:
 	-@cd arch/$(ARCH) && make clean
 	-@cd lib && make clean
 	-@cd video && make clean
-	-@cd fs && make clean
+	-@cd vfs && make clean
 	-@cd audio && make clean
