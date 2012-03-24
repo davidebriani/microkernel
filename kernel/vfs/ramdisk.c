@@ -25,7 +25,7 @@ static uint32_t read(struct vfs_filesystem *self, uint32_t id, uint32_t offset, 
 	length = 7;
 	if (length > count)
 	    return 0;
-        strwrt(buffer, "./\n../\n", 7);
+        strwrt(buffer, "./\n../\n", length);
 
         for (i = 0; i < nodesCount; i++) {
             if (&nodes[i] == node)
@@ -40,8 +40,9 @@ static uint32_t read(struct vfs_filesystem *self, uint32_t id, uint32_t offset, 
             if (slash != size && slash != size - 1)
                 continue;
 
-	    if (length + strlen(buffer + length) > count);
-		return count;
+	    /* if we have to read too much */
+	    if (length + strlen(buffer + length) > count)
+		return length; /* return 0 ? */
 
             strwrt(buffer + length, "%s\n", start);
             length += strlen(buffer + length);

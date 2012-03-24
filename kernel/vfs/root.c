@@ -20,7 +20,9 @@ static uint32_t read(struct vfs_filesystem *self, uint32_t id, uint32_t offset, 
     if (id != 1)
         return 0;
 
-    strwrt(buffer, "./\n../\n", 7);
+    if (length > count)
+	return 0;
+    strwrt(buffer, "./\n../\n", length);
 
     for (i = 0; i < VFS_MOUNT_SLOTS; i++)
     {
@@ -30,12 +32,15 @@ static uint32_t read(struct vfs_filesystem *self, uint32_t id, uint32_t offset, 
 	if (mounts[i].filesystem == self)
             continue;
 
+	/* if we have to read too much */
+	if (length + strlen(buffer + length) > count)
+	    return length; /* return 0 ? */
+
         strwrt(buffer + length, "%s\n", mounts[i].path + 1);
         length += strlen(buffer + length);
     }
 
     return length;
-
 }
 
 static uint32_t find(struct vfs_filesystem *self, int8_t *name) {

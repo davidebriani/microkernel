@@ -107,7 +107,13 @@ static void kernel_test(void) {
 	vfs_read("/ramdisk/boot/sample.txt", 0, 1024, temp);
 	vfs_close("/ramdisk/boot/sample.txt");
 	temp[1023] = 0;
-	puts("/ramdisk/boot/sample.txt: ");
+	puts("---> Reading /ramdisk/boot/sample.txt\n");
+	puts(temp);
+	memclr(temp, 1024);
+	vfs_open("/");
+	vfs_read("/", 0, 1024, temp);
+	vfs_close("/");
+	puts("---> Reading /\n");
 	puts(temp);
     } else {
 	puts("Couldn't open /ramdisk/boot/sample.txt\n");
