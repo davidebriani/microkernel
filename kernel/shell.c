@@ -2,7 +2,6 @@
 #include <kernel/shell.h>
 #include <lib/string.h>
 #include <lib/arch/x86/syscall.h>
-#include <kernel/video/vga.h>
 
 #define SHELL_BUFFER_SIZE 256
 #define SHELL_PROMPT "Shell:/$ "
@@ -33,12 +32,13 @@ static int8_t *shell_buffer_read() {
 }
 
 static void shell_buffer_clear() {
-    syscall_puts(SHELL_PROMPT);
+    call_puts(SHELL_PROMPT);
     shellBufferSize = 0;
 }
 
 void shell_init() {
-    syscall_puts(SHELL_MOTD);
+    /* Use system calls as this we'll be an executable program someday */
+    call_puts(SHELL_MOTD);
 
     shell_buffer_clear();
 
@@ -47,25 +47,31 @@ void shell_init() {
 	    int8_t c = kbd_buffer_read();
 	    /* print out c unless shellBuffer is empty and c is a backspace */
 	    if (!(!shellBufferSize && c == '\b'))
-		syscall_putc(c);
+		call_putc(c);
 	    shell_buffer_write(c);
 
 	    if (c == '\n') {
 		int8_t *command = shell_buffer_read();
 		if (!strcmp(command, "help"))
-		    syscall_puts("- help\tPrint this text\n- clear\tClear the screen\n- exit\tExit the shell\n");
+		    call_puts("- help\t\tPrint this text\n"
+			    "- exit\t\tExit the shell\n"
+			    "- halt\t\tHalt the kernel\n"
+			    "- reboot\tReboot the kernel\n");
 		else if (!strcmp(command, "exit"))
 		    break;
-		else if (!strcmp(command, "clear"))
-		    vga_device_clear();
+		else if (!strcmp(command, "halt"))
+		    call_halt();
+		else if (!strcmp(command, "reboot"))
+		    call_reboot();
 		else
 		    if (strlen(command)) {
-			syscall_puts(command);
-			syscall_puts(": command not found.\n");
+			call_puts(command);
+			call_puts(": command not found.\n");
 		    }
 		shell_buffer_clear();
 		continue;
 	    }
 	}
     }
+    call_puts("Shell closed: bye bye!\n");
 }

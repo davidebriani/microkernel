@@ -39,6 +39,9 @@ void kernel_init(kernel_arch *arch)
     ramdisk_init(kernelArch->ramdiskc, kernelArch->ramdiskv);
     puts("# Initrd................OK\n");
 
+    symbol_init();
+    puts("# Kernel symbols........OK\n");
+
 #if KERNEL_DEBUG
     kernel_test();
 #endif
@@ -59,8 +62,6 @@ void kernel_init(kernel_arch *arch)
 
     /* Init a demo shell: will be a loadable exec. */
     shell_init();
-
-    kernel_reboot();
 }
 
 static void kernel_test(void) {

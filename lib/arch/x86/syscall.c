@@ -48,5 +48,8 @@ uint32_t fn(P1 p1, P2 p2, P3 p3, P4 p4, P5 p5) \
   return a; \
 }
 
-DEFN_SYSCALL1(syscall_puts, 0, const int8_t*)
-DEFN_SYSCALL1(syscall_putc, 1, const int8_t)
+DEFN_SYSCALL1(call_puts, 0, const int8_t*)
+DEFN_SYSCALL1(call_putc, 1, const int8_t)
+DEFN_SYSCALL0(call_halt, 2)
+DEFN_SYSCALL0(call_reboot, 3)
+DEFN_SYSCALL1(call_load, 4, const int8_t*)

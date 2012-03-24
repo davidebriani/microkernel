@@ -2,17 +2,20 @@
 #include <kernel/arch/x86/isr.h>
 #include <kernel/arch/x86/syscall.h>
 #include <lib/arch/x86/syscall.h>
-#include <kernel/video/vga.h>
+#include <kernel/syscall.h>
 
 static void syscall_handler(registers_t *regs);
 
 static void *syscalls[SYSCALL_SLOTS] = { 0 };
 
-void syscalls_init()
+void syscalls_init(void)
 {
     /* Register and connect functions to their syscall number */
-    syscalls[SYSCALL_PUTS] = &puts;
-    syscalls[SYSCALL_PUTC] = &putc;
+    syscalls[SYSCALL_PUTS] = &syscall_puts;
+    syscalls[SYSCALL_PUTC] = &syscall_putc;
+    syscalls[SYSCALL_HALT] = &syscall_halt;
+    syscalls[SYSCALL_REBOOT] = &syscall_reboot;
+    syscalls[SYSCALL_LOAD] = &syscall_load;
 
     /* Register our syscall handler. */
     irq_register_handler(0x80, &syscall_handler);

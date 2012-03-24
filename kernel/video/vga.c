@@ -115,6 +115,7 @@ void putc(const int8_t c) {
     uint32_t att = device->attribute << 8;
 
     /* Handle a backspace, by moving the cursor back one space */
+    /* FIXME: not right when you try to remove a \t or something similar */
     if (c == '\b') {
         if (device->cursorX != 0) {
 	    device->cursorX--;
