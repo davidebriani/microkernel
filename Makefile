@@ -12,32 +12,17 @@ LDFLAGS += -Tlink.ld
 all: kernel ramdisk
 
 kernel: compile $(OBJFILES)
-<<<<<<< HEAD
 	$(LD) $(LDFLAGS) -o $(KERNEL) $(OBJFILES)
-=======
-	$(LD) $(LDFLAGS) -o microkernel $(OBJFILES)
->>>>>>> 83e35da4263f8ee470c5e10b7fc1891fdd3b81f7
 
 compile:
 	cd kernel && make
 	cd lib && make
 	cd mods && make
-<<<<<<< HEAD
 
 ramdisk: $(KERNEL)
 	cd ramdisk && make
 
 floppy: floppy.img $(KERNEL) $(RAMDISK)
-=======
-
-ramdisk: microkernel
-	cp mods/*.ko build/ramdisk/mods/
-	nm microkernel | grep -f build/ramdisk/boot/kernel.sym > build/ramdisk/boot/kernel.map
-	cd build/ramdisk/ && tar -cvf initrd.tar *
-	mv build/ramdisk/initrd.tar .
-
-floppy: microkernel floppy.img initrd.tar
->>>>>>> 83e35da4263f8ee470c5e10b7fc1891fdd3b81f7
 	sudo /sbin/losetup /dev/loop0 floppy.img
 	sudo mount /dev/loop0 /mnt
 	sudo cp $(KERNEL) /mnt/boot/
@@ -52,10 +37,7 @@ clean:
 	-@cd kernel && make clean
 	-@cd lib && make clean
 	-@cd mods && make clean
-<<<<<<< HEAD
 	-@cd ramdisk && make clean
-=======
->>>>>>> 83e35da4263f8ee470c5e10b7fc1891fdd3b81f7
 
 run: floppy.img $(VM)-$(ARCH)
 

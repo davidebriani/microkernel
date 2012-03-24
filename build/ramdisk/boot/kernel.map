@@ -1,9 +1,0 @@
-00100498 T irq_register_handler
-001004aa T irq_remove_handler
-00103fb4 T vfs_close
-00103e53 T vfs_filesystem_init
-00103e04 T vfs_mount
-00103ea3 T vfs_mount_init
-00103f5a T vfs_open
-00104010 T vfs_read
-00104081 T vfs_write
