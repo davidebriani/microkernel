@@ -30,6 +30,7 @@ uint32_t vfs_open(const int8_t *path);
 uint32_t vfs_close(const int8_t *path);
 uint32_t vfs_read(const int8_t *path, uint32_t offset, uint32_t count, void *buffer);
 uint32_t vfs_write(const int8_t *path, uint32_t offset, uint32_t count, void *buffer);
+void *vfs_get_physical(const int8_t *path);
 
 #endif
 

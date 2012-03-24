@@ -39,6 +39,9 @@ void kernel_init(kernel_arch *arch)
     ramdisk_init(kernelArch->ramdiskc, kernelArch->ramdiskv);
     puts("# Initrd................OK\n");
 
+    symbol_init();
+    puts("# Kernel symbols........OK\n");
+
 #if KERNEL_DEBUG
     kernel_test();
 #endif
@@ -59,13 +62,11 @@ void kernel_init(kernel_arch *arch)
 
     /* Init a demo shell: will be a loadable exec. */
     shell_init();
-
-    kernel_reboot();
 }
 
 static void kernel_test(void) {
     void *a, *b, *c, *d;
-    int8_t temp[0x100];
+    int8_t temp[1024] = { 0 };
 
     puts("# Testing timer........\n");
     sleep(1);
@@ -103,8 +104,9 @@ static void kernel_test(void) {
     /* Try to read files from the ramdisk image */
     puts("# Testing initrd.......\n");
     if (vfs_open("/ramdisk/boot/sample.txt")) {
-	vfs_read("/ramdisk/boot/sample.txt", 0, 0x100, temp);
+	vfs_read("/ramdisk/boot/sample.txt", 0, 1024, temp);
 	vfs_close("/ramdisk/boot/sample.txt");
+	temp[1023] = 0;
 	puts("/ramdisk/boot/sample.txt: ");
 	puts(temp);
     } else {
@@ -113,16 +115,12 @@ static void kernel_test(void) {
 }
 
 void kernel_halt() {
-    syscall_puts("\n# System will halt in 2 seconds... ");
-    sleep(2);
-    syscall_puts("OK");
+    syscall_puts("\n# System will now halt.\n");
     kernelArch->halt();
 }
 
 void kernel_reboot() {
-    syscall_puts("\n# System will reboot in 2 seconds... ");
-    sleep(2);
-    syscall_puts("OK");
+    syscall_puts("\n# System will now reboot.");
     kernelArch->reboot();
 }
 

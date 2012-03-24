@@ -8,6 +8,9 @@ struct vfs_mount *vfs_find_mount(const int8_t *path) {
     uint32_t i, length, max = 0;
     struct vfs_mount *current = 0;
 
+    if (!path)
+	return 0;
+
     for (i = 0; i < VFS_MOUNT_SLOTS; i++) {
         if (!mounts[i].filesystem)
             continue;
@@ -59,17 +62,14 @@ void vfs_init(void) {
 }
 
 static uint32_t vfs_find(const int8_t *path, struct vfs_mount **mount) {
-    int32_t index;
     uint32_t id;
 
     *mount = vfs_find_mount(path);
     if (!*mount)
 	return 0;
 
-    index = strdiff(path, (*mount)->path);
-
     if ((*mount)->filesystem->find)
-	id = (*mount)->filesystem->find((*mount)->filesystem, path + index);
+	id = (*mount)->filesystem->find((*mount)->filesystem, path + strlen((*mount)->path));
     else
 	return 0;
 
@@ -138,4 +138,21 @@ uint32_t vfs_write(const int8_t *path, uint32_t offset, uint32_t count, void *bu
 	return 0;
 
     return count;
+}
+
+void *vfs_get_physical(const int8_t *path) {
+    uint32_t id;
+    struct vfs_mount *mount;
+    void *physical;
+
+    id = vfs_find(path, &mount);
+    if (!id)
+	return 0;
+
+    if (mount->filesystem->get_physical)
+	physical = mount->filesystem->get_physical(mount->filesystem, id);
+    else
+	return 0;
+
+    return physical;
 }

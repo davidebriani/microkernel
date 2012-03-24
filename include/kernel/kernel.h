@@ -8,6 +8,7 @@
 #include <kernel/audio/speaker.h>
 #include <kernel/vfs.h>
 #include <kernel/ramdisk.h>
+#include <kernel/symbol.h>
 #include <kernel/video/vga.h>
 #include <kernel/kb.h>
 #include <kernel/heap.h>

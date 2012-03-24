@@ -7,33 +7,37 @@ ASMFILES := $(shell find -L kernel lib -type f -name "*.s")
 OBJFILES := $(patsubst %.s,%.o,$(ASMFILES)) $(patsubst %.c,%.o,$(SRCFILES))
 LDFLAGS += -Tlink.ld
 
-.PHONY: all link compile image run qemu
+.PHONY: all kernel ramdisk compile floppy run qemu
 
-all: link
+all: kernel ramdisk
 
-link: compile $(OBJFILES)
-	$(LD) $(LDFLAGS) -o microkernel $(OBJFILES)
+kernel: compile $(OBJFILES)
+	$(LD) $(LDFLAGS) -o $(KERNEL) $(OBJFILES)
 
 compile:
 	cd kernel && make
 	cd lib && make
-	cd build/ramdisk/ && tar -cvf initrd.tar *
-	mv build/ramdisk/initrd.tar .
+	cd mods && make
 
-image: kernel floppy.img initrd.tar
+ramdisk: $(KERNEL)
+	cd ramdisk && make
+
+floppy: floppy.img $(KERNEL) $(RAMDISK)
 	sudo /sbin/losetup /dev/loop0 floppy.img
 	sudo mount /dev/loop0 /mnt
-	sudo cp microkernel /mnt/boot/kernel
-	sudo cp initrd.tar /mnt/boot/initrd.tar
+	sudo cp $(KERNEL) /mnt/boot/
+	sudo cp $(RAMDISK) /mnt/boot/
 	sudo cp utils/grub/menu.lst /mnt/boot/grub/
 	sudo cp utils/grub/metro.xpm.gz /mnt/boot/grub/splash.xpm.gz
 	sudo umount /dev/loop0
 	sudo /sbin/losetup -d /dev/loop0
 
 clean:
-	-@rm -f microkernel initrd.tar *.log
+	-@rm -f $(KERNEL) $(RAMDISK) *.log
 	-@cd kernel && make clean
 	-@cd lib && make clean
+	-@cd mods && make clean
+	-@cd ramdisk && make clean
 
 run: floppy.img $(VM)-$(ARCH)
 

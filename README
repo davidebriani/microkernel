@@ -23,18 +23,21 @@ The... thing is currently designed for x86 cpu only, gets started by GRUB (or an
 ## Build Instructions
 
     make	(compile and glue together source files)
-    make image	(create a bootable image; will need 'sudo')
+    make floppy	(create a bootable image; will need 'sudo')
     make run	(boot and test the image; will need 'qemu' or 'bochs')
 
 
 
 ## TODO
 
-### General
+### General - Urgent
 
     * mmu stuff + multitasking fixes (or rewriting)
     * cleanups
     * vfs functions & file editing improvements
+    * improve syscall system
+    * separate x86 code from C common code
+    * how to implement a decent stdio?
 
 ### VFS Layer
 
@@ -42,12 +45,14 @@ The... thing is currently designed for x86 cpu only, gets started by GRUB (or an
     * API for underlying filesystems
     * mounting, unmounting, mount lists
     * caches (vnode, etc.)
+    * task-related things
 
 ### Multitasking
 
     * ELF executable & relocatable loading
     * process synchronization (mutexes, semaphores)
-    * priority based scheduling
+    * priority based scheduling (timeslices?)
+    * tickless kernel?
 
 ### Newlib - libc port
 

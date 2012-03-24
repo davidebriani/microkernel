@@ -13,5 +13,5 @@ background 000000
 # My microkernel! - first entry
 title	My microkernel!
 root    (fd0)
-kernel  /boot/kernel
-module  /boot/initrd.tar
+kernel  /boot/microkernel-0.0.0-1
+module  /boot/initrd-0.0.0-1

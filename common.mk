@@ -1,6 +1,20 @@
+########## KERNEL CONFIGURATION ##########
+
 # Architecture to build for: x86
 ARCH := x86
 include $(ROOTDIR)/$(ARCH).mk
+
+# About the kernel
+KERNEL_NAME := microkernel
+KERNEL_VERSION := 0.0.0-1
+
+# Just some useful defines...
+KERNEL := $(KERNEL_NAME)-$(KERNEL_VERSION)
+RAMDISK := initrd-$(KERNEL_VERSION)
+
+
+
+########## TOOLS CONFIGURATION ##########
 
 # Common configuration for GCC
 CC := gcc
