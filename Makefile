@@ -7,7 +7,7 @@ ASMFILES := $(shell find -L kernel lib -type f -name "*.s")
 OBJFILES := $(patsubst %.s,%.o,$(ASMFILES)) $(patsubst %.c,%.o,$(SRCFILES))
 LDFLAGS += -Tlink.ld
 
-.PHONY: all kernel ramdisk compile floppy run qemu
+.PHONY: all kernel ramdisk compile floppy cdrom run-floppy run-cdrom
 
 all: kernel ramdisk
 
@@ -32,17 +32,30 @@ floppy: floppy.img $(KERNEL) $(RAMDISK)
 	sudo umount /dev/loop0
 	sudo /sbin/losetup -d /dev/loop0
 
+cdrom: $(KERNEL) $(RAMDISK)
+	cp $(KERNEL) ramdisk/root/boot/
+	cp $(RAMDISK) ramdisk/root/boot/
+	genisoimage -p "TheWorm" -publisher "TheWorm" -V "$(KERNEL) kernel" -A "Simple microkernel for personal research" -R -b boot/grub/iso9660_stage1_5 -no-emul-boot -boot-load-size 4 -boot-info-table -o $(KERNEL).iso ramdisk/root
+
 clean:
-	-@rm -f $(KERNEL) $(RAMDISK) *.log
+	-@rm -f $(KERNEL) $(RAMDISK) *.log ramdisk/root/boot/$(KERNEL) ramdisk/root/boot/$(RAMDISK) $(KERNEL).iso
 	-@cd kernel && make clean
 	-@cd lib && make clean
 	-@cd mods && make clean
 	-@cd ramdisk && make clean
 
-run: floppy.img $(VM)-$(ARCH)
+run-floppy: floppy.img $(VM)-$(ARCH)-floppy
 
-bochs-x86:
+run-cdrom: $(VM)-$(ARCH)-cdrom
+
+bochs-x86-floppy:
 	bochs -qf utils/bochsrc.txt
 
-qemu-x86:
+bochs-x86-cdrom:
+	echo "Couldn't run bochs with cdrom..."
+
+qemu-x86-floppy:
 	qemu -cpu 486 -smp 1,cores=1,threads=1 -m 32 -k it -soundhw pcspk -fda floppy.img >qemu.log
+
+qemu-x86-cdrom:
+	qemu -cpu 486 -smp 1,cores=1,threads=1 -m 32 -k it -soundhw pcspk -cdrom $(KERNEL).iso >qemu.log

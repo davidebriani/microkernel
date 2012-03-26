@@ -1,0 +1,17 @@
+# default - boot the first entry
+default 0
+
+# after 3 seconds boot default
+timeout 3
+
+# set text colors
+foreground ffffff
+background 000000
+# set background image - it DOESN'T work with bochs!
+#splashimage (fd0)/boot/grub/splash.xpm.gz
+
+# My microkernel! - first entry
+title	My microkernel!
+root    (cd)
+kernel  /boot/microkernel-0.0.0-1
+module  /boot/initrd-0.0.0-1

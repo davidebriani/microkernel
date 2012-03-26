@@ -103,11 +103,11 @@ static void kernel_test(void) {
 
     /* Try to read files from the ramdisk image */
     puts("# Testing initrd.......\n");
-    if (vfs_open("/ramdisk/boot/sample.txt")) {
-	vfs_read("/ramdisk/boot/sample.txt", 0, 1024, temp);
-	vfs_close("/ramdisk/boot/sample.txt");
+    if (vfs_open("/ramdisk/boot/kernel.sym")) {
+	vfs_read("/ramdisk/boot/kernel.sym", 0, 21, temp);
+	vfs_close("/ramdisk/boot/kernel.sym");
 	temp[1023] = 0;
-	puts("---> Reading /ramdisk/boot/sample.txt\n");
+	puts("---> Reading /ramdisk/boot/kernel.sym\n");
 	puts(temp);
 	memclr(temp, 1024);
 	vfs_open("/");
@@ -116,7 +116,7 @@ static void kernel_test(void) {
 	puts("---> Reading /\n");
 	puts(temp);
     } else {
-	puts("Couldn't open /ramdisk/boot/sample.txt\n");
+	puts("Couldn't open /ramdisk/boot/kernel.sym\n");
     }
 }
 

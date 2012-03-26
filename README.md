@@ -22,9 +22,23 @@ The... thing is currently designed for x86 cpu only, gets started by GRUB (or an
 
 ## Build Instructions
 
-    make	(compile and glue together source files)
-    make floppy	(create a bootable image; will need 'sudo')
-    make run	(boot and test the image; will need 'qemu' or 'bochs')
+### Step 1
+
+    make		(compile and glue together source files)
+
+### Step 2
+
+    make cdrom		(create a cdrom bootable image)
+    make floppy		(create a floppy bootable image; will need 'genisoimage')
+
+### Step 3
+
+    make run-cdrom	(boot and test the cdrom image; will need 'qemu' or 'bochs')
+    make run-floppy	(boot and test the floppy image; will need 'qemu' or 'bochs')
+
+### Step 4
+
+    vim common.mk	(edit configuration and options; will need 'vim')
 
 
 
