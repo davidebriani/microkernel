@@ -1,12 +1,7 @@
-ROOTDIR := ..
-include $(ROOTDIR)/common.mk
-CFLAGS += -I$(ROOTDIR)/include
-LDFLAGS := -r
-
 .PHONY: all clean
 
-all: $(OBJFILES)
-	@${LD} ${LDFLAGS} test.o -o test.ko
+all:
+	cd test && make
 
 clean:
-	-@rm -f *.o *.ko
+	-@cd test && make clean

@@ -25,7 +25,7 @@ uint32_t syscall_puts(const int8_t *string) {
 
 uint32_t syscall_load(const int8_t *path) {
     void *physical;
-    void (*init)(void);
+    void (*init)(void) = 0;
 
     physical = vfs_get_physical(path);
 

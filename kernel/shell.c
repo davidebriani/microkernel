@@ -63,6 +63,8 @@ void shell_init() {
 		    call_halt();
 		else if (!strcmp(command, "reboot"))
 		    call_reboot();
+		else if (!strcmp(command, "test"))
+		    call_load("/ramdisk/mods/test.ko");
 		else
 		    if (strlen(command)) {
 			call_puts(command);
