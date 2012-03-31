@@ -22,7 +22,7 @@ The... thing is currently designed for x86 cpu only, gets started by GRUB (or an
 
 ## Build Instructions
 
-    make		(compile and glue together source files)
+    make kernel		(compile and glue together source files)
 
     make cdrom		(create a cdrom bootable image)
     make floppy		(create a floppy bootable image; will need 'genisoimage')
