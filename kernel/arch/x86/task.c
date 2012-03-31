@@ -3,7 +3,7 @@
 #include <kernel/arch/x86/mmu.h>
 #include <kernel/arch/x86/cpu.h>
 #include <kernel/heap.h>
-#include <lib/string.h>
+#include <kernel/lib/string.h>
 #include <kernel/timer.h>
 
 /* The currently running task */

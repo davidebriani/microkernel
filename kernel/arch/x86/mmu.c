@@ -1,6 +1,6 @@
 #include <kernel/arch/x86/mmu.h>
 #include <kernel/heap.h>
-#include <lib/string.h>
+#include <kernel/lib/string.h>
 #include <kernel/video/vga.h>
 #include <kernel/panic.h>
 

@@ -1,5 +1,5 @@
-#include <lib/string.h>
-#include <lib/tar.h>
+#include <kernel/lib/string.h>
+#include <kernel/lib/tar.h>
 #include <kernel/ramdisk.h>
 #include <kernel/vfs.h>
 #include <kernel/vfs/ramdisk.h>

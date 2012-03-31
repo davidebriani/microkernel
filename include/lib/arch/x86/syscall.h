@@ -1,9 +1,7 @@
 #ifndef LIB_ARCH_X86_SYSCALL_H
 #define LIB_ARCH_X86_SYSCALL_H
 
-#include <kernel/stdint.h>
-
-#define SYSCALL_SLOTS 256
+#include <lib/stdint.h>
 
 #define DECL_SYSCALL0(fn) uint32_t fn(void);
 #define DECL_SYSCALL1(fn,p1) uint32_t fn(p1);

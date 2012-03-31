@@ -1,7 +1,7 @@
 #include <kernel/symbol.h>
 #include <kernel/panic.h>
 #include <kernel/vfs.h>
-#include <lib/string.h>
+#include <kernel/lib/string.h>
 
 static struct symbol_entry symbol_entries[SYMBOL_ENTRY_SLOTS];
 static int8_t symbol_map[SYMBOL_MAP_SIZE];

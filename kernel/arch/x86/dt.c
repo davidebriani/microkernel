@@ -1,7 +1,7 @@
 #include <kernel/arch/x86/dt.h>
 #include <kernel/arch/x86/isr.h>
 #include <kernel/arch/x86/io.h>
-#include <lib/string.h>
+#include <kernel/lib/string.h>
 
 /* Three ASM function defined in dt.s to load GDT, IDT and TSS */
 extern void gdt_flush(uint32_t);

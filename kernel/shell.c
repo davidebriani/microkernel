@@ -1,6 +1,6 @@
 #include <kernel/kb.h>
 #include <kernel/shell.h>
-#include <lib/string.h>
+#include <kernel/lib/string.h>
 #include <lib/arch/x86/syscall.h>
 
 #define SHELL_BUFFER_SIZE 256

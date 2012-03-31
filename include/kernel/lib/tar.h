@@ -1,5 +1,5 @@
-#ifndef LIB_TAR_H
-#define LIB_TAR_H
+#ifndef KERNEL_LIB_TAR_H
+#define KERNEL_LIB_TAR_H
 
 #include <kernel/stdint.h>
 

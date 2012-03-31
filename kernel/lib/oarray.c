@@ -1,7 +1,7 @@
 #include <kernel/lib/oarray.h>
 #include <kernel/panic.h>
 #include <kernel/heap.h>
-#include <lib/string.h>
+#include <kernel/lib/string.h>
 
 int8_t standard_lessthan_predicate(type_t a, type_t b)
 {

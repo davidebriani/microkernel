@@ -2,7 +2,7 @@
 #define KERNEL_RAMDISK_H
 
 #include <kernel/stdint.h>
-#include <lib/tar.h>
+#include <kernel/lib/tar.h>
 
 #define RAMDISK_NODE_SLOTS 64
 

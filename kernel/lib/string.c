@@ -1,4 +1,4 @@
-#include <lib/string.h>
+#include <kernel/lib/string.h>
 
 void *memcpy(void *dest, const void *src, int32_t count) {
     const uint8_t *sp = (const uint8_t *)src;
@@ -74,7 +74,7 @@ int8_t *strchr(const int8_t *str, int8_t c) {
 }
 
 int8_t *strcpy(int8_t *dest, const int8_t *src) {
-    memcpy(dest, src, strlen(src) + 1);
+    memcpy(dest, src, (strlen(src) + 1) * sizeof(int8_t));
     return (int8_t *) src;
 }
 

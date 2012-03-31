@@ -1,8 +1,7 @@
-#ifndef KERNEL_STDLIB_H
-#define KERNEL_STDLIB_H
+#ifndef LIB_STDLIB_H
+#define LIB_STDLIB_H
 
-/* A few useful defines */
-#define NULL		0
+#define NULL		((void *)0)
 #define FALSE		0
 #define TRUE		1
 #define RAND_MAX	2147483647

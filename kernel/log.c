@@ -1,4 +1,4 @@
-#include <lib/string.h>
+#include <kernel/lib/string.h>
 #include <kernel/log.h>
 #include <kernel/vfs.h>
 

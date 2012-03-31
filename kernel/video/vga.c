@@ -1,5 +1,5 @@
 #include <kernel/video/vga.h>
-#include <lib/string.h>
+#include <kernel/lib/string.h>
 #include <kernel/arch/x86/io.h>
 
 struct vga_device *device;
