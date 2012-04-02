@@ -61,6 +61,27 @@ void isr_handler(registers_t regs) {
     *  bit (0x80) is set, regs.int_no will be very large (about 0xffffff80). */
     uint8_t int_no = regs.int_no & 0xFF;
 
+    /* The IRQ Controllers need to be told when you are done
+    *  servicing them, so you need to send them an "End of
+    *  Interrupt" command (0x20). There are two 8259 chips:
+    *  The first exists at 0x20, the second exists at 0xA0.
+    *  If the second controller (an IRQ from 8 to 15) gets
+    *  an interrupt, you need to acknowledge the interrupt
+    *  at BOTH controllers, otherwise, you only send an EOI
+    *  command to the first controller. If you don't send
+    *  an EOI, you won't raise any more IRQs */
+
+    /* Send an EOI (end of interrupt) signal to the PICs.
+    *  If the IDT entry that was invoked was greater than 40
+    *  (meaning IRQ8 - 15), then we need to send an EOI to
+    *  the slave controller */
+    if (int_no >= 40) {
+        /* Send reset signal to slave. */
+        io_outb(0xA0, 0x20);
+    }
+    /* Send reset signal to master. (As well as slave, if necessary). */
+    io_outb(0x20, 0x20);
+
     if (irq_handlers[int_no] != 0) {
         isr_t handler = irq_handlers[int_no];
         handler(&regs);
@@ -80,36 +101,4 @@ void isr_handler(registers_t regs) {
             for (;;);
         }
     }
-}
-
-/* This gets called from our ASM interrupt handler stub.
-*  The IRQ Controllers need to be told when you are done
-*  servicing them, so you need to send them an "End of
-*  Interrupt" command (0x20). There are two 8259 chips:
-*  The first exists at 0x20, the second exists at 0xA0.
-*  If the second controller (an IRQ from 8 to 15) gets
-*  an interrupt, you need to acknowledge the interrupt
-*  at BOTH controllers, otherwise, you only send an EOI
-*  command to the first controller. If you don't send
-*  an EOI, you won't raise any more IRQs */
-void irq_handler(registers_t regs) {
-    /* Send an EOI (end of interrupt) signal to the PICs.*/
-
-    /* If the IDT entry that was invoked was greater than 40
-    *  (meaning IRQ8 - 15), then we need to send an EOI to
-    *  the slave controller */
-    if (regs.int_no >= 40) {
-        /* Send reset signal to slave. */
-        io_outb(0xA0, 0x20);
-    }
-    /* Send reset signal to master. (As well as slave, if necessary). */
-    io_outb(0x20, 0x20);
-
-    /* Find out if we have a custom handler to run for this
-    *  IRQ, and then finally, run it */
-    if (irq_handlers[regs.int_no] != 0) {
-        isr_t handler = irq_handlers[regs.int_no];
-        handler(&regs);
-    }
-
 }
