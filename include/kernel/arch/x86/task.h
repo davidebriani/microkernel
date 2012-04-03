@@ -10,6 +10,7 @@
 typedef struct task
 {
     int32_t id;				/* Process ID */
+    int32_t parentid;			/* Parent process ID */
     uint32_t esp, ebp;			/* Stack and base pointers */
     uint32_t eip;			/* Instruction pointer */
     page_directory_t *page_directory;	/* Page directory */
@@ -24,13 +25,16 @@ void tasking_init(void);
 void task_switch(void);
 
 /* Forks the current process, spawning a new one with a different memory space */
-int32_t fork(void);
+int32_t task_fork(void);
 
 /* Causes the current process' stack to be forcibly moved to a new location */
 void move_stack(void *new_stack_start, uint32_t size);
 
 /* Returns the pid of the current process */
-int32_t getpid(void);
+int32_t task_getpid(void);
+
+/* Returns a pointer to 'pid' process */
+task_t *task_gettask(int32_t pid);
 
 /* Temp forks and executes func(), returns child's pid */
 int32_t task_init(void func(void));

@@ -32,6 +32,7 @@ void tasking_init()
     /* Initialise the first task (kernel task) */
     current_task = ready_queue = (task_t*) kmalloc(sizeof(task_t));
     current_task->id = next_pid++;
+    current_task->parentid = 0;
     current_task->esp = current_task->ebp = 0;
     current_task->eip = 0;
     current_task->page_directory = current_directory;
@@ -159,7 +160,7 @@ void task_switch()
 	jmp *%%ecx		" : : "r"(eip), "r"(esp), "r"(ebp), "r"(current_directory->physicalAddr));
 }
 
-int32_t fork()
+int32_t task_fork()
 {
     /* We are modifying kernel structures, and so cannot */
     cpu_disable_interrupts();
@@ -199,6 +200,7 @@ int32_t fork()
 	new_task->esp = esp;
 	new_task->ebp = ebp;
 	new_task->eip = eip;
+	new_task->parentid = parent_task->id;
 	cpu_enable_interrupts;
 
 	return new_task->id;
@@ -210,15 +212,25 @@ int32_t fork()
     }
 }
 
-int32_t getpid()
-{
+int32_t task_getpid() {
     return current_task->id;
 }
 
-int32_t task_init(void func(void))
-{
-    int32_t ret = fork();
-    int32_t pid = getpid();
+task_t *task_gettask(int32_t pid) {
+    task_t *tmp_task = (task_t *) ready_queue;
+
+    /* Find the process in the proc. list */
+    while (tmp_task->id != pid) {
+	tmp_task = tmp_task->next;
+	if (!tmp_task)
+	    break;
+    }
+    return tmp_task;
+}
+
+int32_t task_init(void func(void)) {
+    int32_t ret = task_fork();
+    int32_t pid = task_getpid();
 
     /* If we are the child */
     if (!ret)
@@ -231,30 +243,32 @@ int32_t task_init(void func(void))
     return ret;
 }
 
-int32_t task_kill(int32_t pid)
-{
-    task_t *tmp_task = (task_t *) ready_queue;
-    task_t *par_task = tmp_task;
+int32_t task_kill(int32_t pid) {
+    task_t *tmp_task;
+    task_t *par_task;
 
-    /* Find the process in the proc. list */
-    while (tmp_task->id != pid) {
-        par_task = tmp_task;
-        tmp_task = tmp_task->next;
-    }
+    if (!pid)
+	return 0;
+
+    tmp_task = task_gettask(pid);
+    if (!tmp_task)
+	return 0;
 
     /* Can we delete it? */
-    if (tmp_task != par_task) {
+    if (tmp_task->parentid) {
+	par_task = task_gettask(tmp_task->parentid);
 	/* If its stack is reachable, delete it */
 	if (tmp_task->kernel_stack)
 	    kfree((void *) tmp_task->kernel_stack);
         par_task->next = tmp_task->next;
+	kfree((void *) tmp_task);
         /* Wait 1 second so that we have time to switch
         * to another process before this one returns: we
         * are killing the child! */
         sleep(1);
-	return 0;
+	return pid;
     } else {
-        return -1;
+        return 0;
     }
 }
 

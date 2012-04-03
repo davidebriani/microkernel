@@ -38,7 +38,7 @@ The... thing is currently designed for x86 cpu only, gets started by GRUB (or an
 
 ### General - Urgent
 
-    * mmu stuff + multitasking fixes (or rewriting)
+    * REWRITE kernel code: mmu, multitasking and descr. tables code
     * cleanups
     * vfs functions & file editing improvements
     * improve syscall system
