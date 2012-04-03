@@ -7,6 +7,7 @@
 #include <kernel/arch/x86/isr.h>
 #include <kernel/arch/x86/mmu.h>
 #include <kernel/mboot.h>
+#include <kernel/lib/string.h>
 
 static arch_x86 x86;
 uint32_t initial_esp;
@@ -38,6 +39,7 @@ static void arch_x86_setup(void) {
 }
 
 void arch_init(uint32_t magic, multiboot_header_t *header, void *stack) {
+    strcpy(x86.name, "x86");
     x86.setup = arch_x86_setup;
     x86.setup_mmu = mmu_init;
     x86.reboot = arch_x86_reboot;

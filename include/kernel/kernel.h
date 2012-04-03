@@ -16,10 +16,11 @@
 #include <kernel/arch/x86/syscall.h>
 #include <kernel/shell.h>
 
-#define KERNEL_DEBUG 1
+#define KERNEL_DEBUG 0
 #define KERNEL_TEST  0
 
 typedef struct kernel_arch {
+    int8_t name[32];
     void (*setup)(void);
     void (*setup_mmu)(void);
     void (*enable_interrupts)(void);

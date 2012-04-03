@@ -8,39 +8,44 @@ void kernel_init(kernel_arch *arch)
 {
     /* Setup the screen (by clearing it) */
     vga_device_init();
-    puts("# Screen (text mode)... OK\n");
+    puts("# Screen (text mode)\tOK\n");
 
     kernelArch = arch;
     if (!kernelArch)
 	PANIC("No registered architecture.");
+
+    if (!strlen(kernelArch->name))
+	PANIC("Registered architecture has no name.");
+    else
+	kprintf("# Arch: %s\t\tOK\n", kernelArch->name);
 
     mboot_init(kernelArch->magic, kernelArch->mboot);
 
     /* Setup architecture-dep. stuff */
     if (kernelArch->setup)
 	kernelArch->setup();
-    puts("# GDT & IDT............ OK\n");
+    puts("# GDT & IDT\t\tOK\n");
 
     /* Init the system timer: will be a loadable module */
     timer_init();
-    puts("# Timer/Clock.......... OK\n");
+    puts("# Timer/Clock\t\tOK\n");
 
     /* Init the keyboard: will be a loadable module */
     keyboard_init();
-    puts("# Keyboard (US)........ OK\n");
+    puts("# Keyboard (US)\t\tOK\n");
 
     if (kernelArch->setup_mmu)
 	kernelArch->setup_mmu();
-    puts("# Paging............... OK\n");
+    puts("# Paging\t\tOK\n");
 
     vfs_init();
-    puts("# VFS...................OK\n");
+    puts("# VFS\t\t\tOK\n");
 
     ramdisk_init(kernelArch->ramdiskc, kernelArch->ramdiskv);
-    puts("# Initrd................OK\n");
+    puts("# Initrd\t\tOK\n");
 
     symbol_init();
-    puts("# Kernel symbols........OK\n");
+    puts("# Kernel symbols\tOK\n");
 
 #if KERNEL_DEBUG
     kernel_test();
@@ -48,16 +53,16 @@ void kernel_init(kernel_arch *arch)
 
     /* Setup syscalls */
     syscalls_init();
-    syscall_puts("# Syscalls............. OK\n");
+    syscall_puts("# Syscalls\t\tOK\n");
 
 #if KERNEL_TEST
     /* Setup multitasking */
     tasking_init();
-    syscall_puts("# Multitasking......... OK\n");
+    syscall_puts("# Multitasking\t\tOK\n");
 
     /* Switch to user mode */
     usermode_init();
-    syscall_puts("# Usermode..............OK\n");
+    syscall_puts("# Usermode\t\tOK\n");
 #endif
 
     /* Init a demo shell: will be a loadable exec. */
