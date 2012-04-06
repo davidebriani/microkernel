@@ -16,8 +16,6 @@ extern uint32_t placement_address;
 static void arch_x86_reboot(void) {
     uint8_t ready = 0x02;
 
-    cpu_disable_interrupts();
-
     while (ready & 0x02)
         ready = io_inb(0x64);
     io_outb(0x64, 0xFE);
@@ -33,13 +31,15 @@ static void arch_x86_setup(void) {
     *  been loaded as a module by the boot loader */
     ASSERT(x86.ramdiskc > 0);
     /* Don't trample our module with placement accesses, please! */
-    placement_address = *(uint32_t **)(x86.ramdiskv + 1); /* initrd end */
+    placement_address = *(uint32_t *)(x86.ramdiskv + 1); /* initrd end */
 
     cpu_enable_interrupts();
 }
 
 void arch_init(uint32_t magic, multiboot_header_t *header, void *stack) {
-    strcpy(x86.name, "x86");
+    memclr(&x86, sizeof(arch_x86));
+
+    x86.name = "x86";
     x86.setup = arch_x86_setup;
     x86.setup_mmu = mmu_init;
     x86.reboot = arch_x86_reboot;

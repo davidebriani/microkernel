@@ -12,6 +12,14 @@ static uint8_t hexmap[] = {
 static uint8_t detect_video(void);
 static uint16_t textcolor(uint8_t forecolor, uint8_t backcolor);
 
+/* Detects installed graphics card type. Returns:
+*  VGA_CARD_MONO	if monochromatic card
+*  VGA_CARD_COLOR	if color card */
+static uint8_t detect_video(void) {
+    uint8_t c = (*((uint16_t *) 0x410) & 0x30);
+    return c?VGA_CARD_MONO:VGA_CARD_COLOR;
+}
+
 /* Scrolls the screen */
 void vga_device_scroll(void) {
     unsigned blank, temp;
@@ -88,7 +96,8 @@ static uint16_t textcolor(uint8_t forecolor, uint8_t backcolor) {
 
 /* Sets the forecolor and backcolor that we will use */
 void vga_device_cursor_set_color(uint8_t forecolor, uint8_t backcolor) {
-    device->attribute = textcolor(forecolor, backcolor);
+    if (detect_video() == VGA_CARD_COLOR)
+	device->attribute = textcolor(forecolor, backcolor);
 }
 
 /* Sets our text-mode VGA pointer, then clears the screen for us */
@@ -99,14 +108,6 @@ void vga_device_init(void) {
     device->cursorY = 0;
     vga_device_clear();
     vga_device_cursor_set_color(VGA_WHITE, VGA_BLACK);
-}
-
-/* Detects installed graphics card type. Returns:
-*  VGA_CARD_MONO	if monochromatic card
-*  VGA_CARD_COLOR	if color card */
-static uint8_t detect_video(void) {
-    uint8_t c = (*((uint16_t *) 0x410) & 0x30);
-    return c?VGA_CARD_MONO:VGA_CARD_COLOR;
 }
 
 /* Puts a single character on the screen */
@@ -162,7 +163,7 @@ void putc(const int8_t c) {
 
 /* Uses the above routine to output a string... */
 void puts(const int8_t *text) {
-    int32_t i;
+    uint32_t i;
 
     for (i = 0; i < strlen(text); i++)
         putc(text[i]);

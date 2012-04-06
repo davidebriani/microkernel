@@ -59,8 +59,6 @@ static uint32_t read(struct vfs_filesystem *self, uint32_t id, uint32_t offset, 
 }
 
 static uint32_t write(struct vfs_filesystem *self, uint32_t id, uint32_t offset, uint32_t count, void *buffer) {
-    uint32_t i, length, size, slash;
-    uint8_t *start;
     struct ramdisk_node *node = &nodes[id - 1];
 
     if (node->header->typeflag[0] == TAR_FILETYPE_DIR) {
@@ -75,7 +73,7 @@ static uint32_t write(struct vfs_filesystem *self, uint32_t id, uint32_t offset,
     return 0;
 }
 
-static uint32_t find(struct vfs_filesystem *self, uint8_t *name) {
+static uint32_t find(struct vfs_filesystem *self, const int8_t *name) {
     uint32_t i, l2, length = strlen(name);
 
     if (!length)

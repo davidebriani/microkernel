@@ -5,8 +5,10 @@ ARCH := x86
 include $(ROOTDIR)/$(ARCH).mk
 
 # About the kernel
+KERNEL_AUTHOR := TheWorm
 KERNEL_NAME := microkernel
 KERNEL_VERSION := 0.0.0-1
+KERNEL_DESCRIPTION := Simple microkernel for personal research
 
 # Just some useful defines...
 KERNEL := $(KERNEL_NAME)-$(KERNEL_VERSION)

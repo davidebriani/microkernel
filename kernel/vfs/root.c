@@ -43,7 +43,7 @@ static uint32_t read(struct vfs_filesystem *self, uint32_t id, uint32_t offset, 
     return length;
 }
 
-static uint32_t find(struct vfs_filesystem *self, int8_t *name) {
+static uint32_t find(struct vfs_filesystem *self, const int8_t *name) {
     return 1;
 }
 

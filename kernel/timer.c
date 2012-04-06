@@ -17,7 +17,7 @@ static void timer_callback(registers_t *regs) {
 
 void timer_init() {
     /* Firstly, register our timer callback. */
-    irq_register_handler(IRQ0, &timer_callback);
+    irq_register_handler(IRQ_PIT, &timer_callback);
     /* Now set the timer phase */
     timer_phase(TIMER_FREQ);
 }

@@ -1,6 +1,7 @@
 ROOTDIR := .
 include $(ROOTDIR)/common.mk
 
+# TODO: compile lib/* separately as a library, without static linking
 # object files from /src/asm go first when linking!
 SRCFILES := $(shell find -L kernel lib -type f -name "*.c")
 ASMFILES := $(shell find -L kernel lib -type f -name "*.s")
@@ -43,7 +44,7 @@ floppy: floppy.img $(KERNEL) $(RAMDISK)
 cdrom: $(KERNEL) $(RAMDISK)
 	cp $(KERNEL) ramdisk/root/boot/
 	cp $(RAMDISK) ramdisk/root/boot/
-	genisoimage -p "TheWorm" -publisher "TheWorm" -V "$(KERNEL) kernel" -A "Simple microkernel for personal research" -R -b boot/grub/iso9660_stage1_5 -no-emul-boot -boot-load-size 4 -boot-info-table -o $(KERNEL).iso ramdisk/root
+	genisoimage -p "$(KERNEL_AUTHOR)" -publisher "$(KERNEL_AUTHOR)" -V "$(KERNEL) kernel" -A "$(KERNEL_DESCRIPTION)" -R -b boot/grub/iso9660_stage1_5 -no-emul-boot -boot-load-size 4 -boot-info-table -o $(KERNEL).iso ramdisk/root
 
 # [3] make run-floppy	Boot the floppy image on the VM emulator.
 run-floppy: floppy.img $(VM)-$(ARCH)-floppy

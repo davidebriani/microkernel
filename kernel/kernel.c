@@ -6,46 +6,44 @@ static void kernel_test(void);
 
 void kernel_init(kernel_arch *arch)
 {
+    /* TODO: Put vga stuff into a module */
     /* Setup the screen (by clearing it) */
     vga_device_init();
-    puts("# Screen (text mode)\tOK\n");
+    log_write("# Screen (text mode)\tOK\n");
 
     kernelArch = arch;
     if (!kernelArch)
 	PANIC("No registered architecture.");
 
-    if (!strlen(kernelArch->name))
-	PANIC("Registered architecture has no name.");
-    else
-	kprintf("# Arch: %s\t\tOK\n", kernelArch->name);
+    log_write("# Arch: %s\t\tOK\n", kernelArch->name);
 
     mboot_init(kernelArch->magic, kernelArch->mboot);
 
     /* Setup architecture-dep. stuff */
     if (kernelArch->setup)
 	kernelArch->setup();
-    puts("# GDT & IDT\t\tOK\n");
+    log_write("# GDT & IDT\t\tOK\n");
 
     /* Init the system timer: will be a loadable module */
     timer_init();
-    puts("# Timer/Clock\t\tOK\n");
+    log_write("# Timer/Clock\t\tOK\n");
 
     /* Init the keyboard: will be a loadable module */
     keyboard_init();
-    puts("# Keyboard (US)\t\tOK\n");
+    log_write("# Keyboard (US)\t\tOK\n");
 
     if (kernelArch->setup_mmu)
 	kernelArch->setup_mmu();
-    puts("# Paging\t\tOK\n");
+    log_write("# Paging\t\tOK\n");
 
     vfs_init();
-    puts("# VFS\t\t\tOK\n");
+    log_write("# VFS\t\t\tOK\n");
 
     ramdisk_init(kernelArch->ramdiskc, kernelArch->ramdiskv);
-    puts("# Initrd\t\tOK\n");
+    log_write("# Initrd\t\tOK\n");
 
     symbol_init();
-    puts("# Kernel symbols\tOK\n");
+    log_write("# Kernel symbols\tOK\n");
 
 #if KERNEL_DEBUG
     kernel_test();
@@ -53,16 +51,16 @@ void kernel_init(kernel_arch *arch)
 
     /* Setup syscalls */
     syscalls_init();
-    syscall_puts("# Syscalls\t\tOK\n");
+    log_write("# Syscalls\t\tOK\n");
 
 #if KERNEL_TEST
     /* Setup multitasking */
     tasking_init();
-    syscall_puts("# Multitasking\t\tOK\n");
+    log_write("# Multitasking\t\tOK\n");
 
     /* Switch to user mode */
     usermode_init();
-    syscall_puts("# Usermode\t\tOK\n");
+    log_write("# Usermode\t\tOK\n");
 #endif
 
     /* Init a demo shell: will be a loadable exec. */
@@ -73,7 +71,7 @@ static void kernel_test(void) {
     void *a, *b, *c, *d;
     int8_t temp[1024] = { 0 };
 
-    puts("# Testing timer........\n");
+    log_write("# Testing timer........\n");
     sleep(1);
 
     puts("# Testing PC speaker...\n");
@@ -85,14 +83,14 @@ static void kernel_test(void) {
     beep(1000, 0.3);
 
     /* Check if the system really works */
-    puts("# Testing interrupts...\n");
+    log_write("# Testing interrupts...\n");
     __asm__ __volatile__("int $0x0");
     __asm__ __volatile__("int $0x3");
     /* Important! Re-enable interrupt requests */
     kernel_enable_interrupts();
 
     /* Check if something went wrong with paging and heap setup */
-    puts("# Testing the heap.....\n");
+    log_write("# Testing the heap.....\n");
     a = (void *) kmalloc(8);
     b = (void *) kmalloc(8);
     c = (void *) kmalloc(8);
@@ -107,31 +105,33 @@ static void kernel_test(void) {
     kfree(d);
 
     /* Try to read files from the ramdisk image */
-    puts("# Testing initrd.......\n");
+    log_write("# Testing initrd.......\n");
     if (vfs_open("/ramdisk/boot/kernel.sym")) {
 	vfs_read("/ramdisk/boot/kernel.sym", 0, 21, temp);
 	vfs_close("/ramdisk/boot/kernel.sym");
 	temp[1023] = 0;
-	puts("---> Reading /ramdisk/boot/kernel.sym\n");
-	puts(temp);
+	log_write("---> Reading /ramdisk/boot/kernel.sym\n");
+	log_write("%s", temp);
 	memclr(temp, 1024);
 	vfs_open("/");
 	vfs_read("/", 0, 1024, temp);
 	vfs_close("/");
-	puts("---> Reading /\n");
-	puts(temp);
+	log_write("---> Reading /\n");
+	log_write("%s", temp);
     } else {
-	puts("Couldn't open /ramdisk/boot/kernel.sym\n");
+	log_write("Couldn't open /ramdisk/boot/kernel.sym\n");
     }
 }
 
 void kernel_halt() {
-    syscall_puts("\n# System will now halt.\n");
+    log_write("\n# System will now halt.\n");
+    kernelArch->disable_interrupts();
     kernelArch->halt();
 }
 
 void kernel_reboot() {
-    syscall_puts("\n# System will now reboot.");
+    log_write("\n# System will now reboot.");
+    kernelArch->disable_interrupts();
     kernelArch->reboot();
 }
 

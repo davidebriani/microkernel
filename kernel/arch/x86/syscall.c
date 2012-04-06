@@ -10,7 +10,7 @@ void syscalls_init(void) {
     syscall_setup();
 
     /* Register our syscall handler. */
-    irq_register_handler(0x80, &syscall_handler);
+    irq_register_handler(IRQ_SYSCALL, &syscall_handler);
 }
 
 void syscall_handler(registers_t *regs) {

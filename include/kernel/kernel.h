@@ -13,14 +13,15 @@
 #include <kernel/kb.h>
 #include <kernel/heap.h>
 #include <kernel/arch/x86/task.h>
-#include <kernel/arch/x86/syscall.h>
+#include <kernel/syscall.h>
 #include <kernel/shell.h>
+#include <kernel/lib/string.h>
 
 #define KERNEL_DEBUG 0
 #define KERNEL_TEST  0
 
 typedef struct kernel_arch {
-    int8_t name[32];
+    const int8_t *name;
     void (*setup)(void);
     void (*setup_mmu)(void);
     void (*enable_interrupts)(void);

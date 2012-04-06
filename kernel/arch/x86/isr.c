@@ -1,6 +1,6 @@
 #include <kernel/arch/x86/isr.h>
-#include <kernel/video/vga.h>
 #include <kernel/arch/x86/io.h>
+#include <kernel/log.h>
 
 /* This array is actually an array of function pointers. We use
 *  this to handle custom IRQ handlers for a given IRQ */
@@ -92,13 +92,10 @@ void isr_handler(registers_t regs) {
             /* Display the description for the Exception that occurred.
             *  In this tutorial, we will simply halt the system using an
             *  infinite loop */
-	    puts("Alert! Ignoring interrupt: ");
-            puts(exception_messages[int_no]);
-            puts(" Exception.\n");
+	    log_write("# Warning! Ignoring interrupt: %s Exception\n", exception_messages[int_no]);
         }
         else {
-            kprintf("Unhandled interrupt: %x! System Halted!\n", int_no);
-            for (;;);
+            log_write("# Warning! Unhandled interrupt: 0x%x\n", int_no);
         }
     }
 }

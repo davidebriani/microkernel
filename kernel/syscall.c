@@ -1,33 +1,32 @@
 #include <kernel/syscall.h>
 #include <kernel/kernel.h>
 #include <kernel/vfs.h>
-#include <kernel/video/vga.h>
 
 static void *syscalls[SYSCALL_SLOTS] = { 0 };
 
-/* TODO: Declare syscall_* functions as static */
+/* Here goes all static uint32_t _syscall(*) definitions */
 
-uint32_t syscall_halt(void) {
+static uint32_t _halt(void) {
     kernel_halt();
     return 0;
 }
 
-uint32_t syscall_reboot(void) {
+static uint32_t _reboot(void) {
     kernel_reboot();
     return 0;
 }
 
-uint32_t syscall_putc(const int8_t c) {
-    putc(c);
+static uint32_t _putc(const int8_t c) {
+    log_write("%c", c);
     return 0;
 }
 
-uint32_t syscall_puts(const int8_t *string) {
-    puts(string);
+static uint32_t _puts(const int8_t *string) {
+    log_write("%s", string);
     return 0;
 }
 
-uint32_t syscall_load(const int8_t *path) {
+static uint32_t _load(const int8_t *path) {
     void *physical;
     void (*init)(void) = 0;
 
@@ -51,23 +50,23 @@ uint32_t syscall_load(const int8_t *path) {
     return 1;
 }
 
-void *syscall_get_function(int32_t fn) {
+void *syscall_get_function(uint32_t int_no) {
     /* Check if the requested syscall number is valid */
-    if (fn >= SYSCALL_SLOTS)
+    if (int_no >= SYSCALL_SLOTS)
 	return 0;
 
     /* Do we have a registered callback for the specified syscall? */
-    if (!syscalls[fn])
+    if (!syscalls[int_no])
 	return 0;
     else
-	return syscalls[fn];
+	return syscalls[int_no];
 }
 
 void syscall_setup(void) {
     /* Register and connect functions to their syscall number */
-    syscalls[SYSCALL_PUTS] = &syscall_puts;
-    syscalls[SYSCALL_PUTC] = &syscall_putc;
-    syscalls[SYSCALL_HALT] = &syscall_halt;
-    syscalls[SYSCALL_REBOOT] = &syscall_reboot;
-    syscalls[SYSCALL_LOAD] = &syscall_load;
+    syscalls[SYSCALL_PUTS] =	&_puts;
+    syscalls[SYSCALL_PUTC] =	&_putc;
+    syscalls[SYSCALL_HALT] =	&_halt;
+    syscalls[SYSCALL_REBOOT] =	&_reboot;
+    syscalls[SYSCALL_LOAD] =	&_load;
 }

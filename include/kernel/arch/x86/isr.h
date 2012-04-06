@@ -4,22 +4,39 @@
 #include <kernel/stdint.h>
 
 /* A few defines to make life a little easier */
-#define IRQ0 32
-#define IRQ1 33
-#define IRQ2 34
-#define IRQ3 35
-#define IRQ4 36
-#define IRQ5 37
-#define IRQ6 38
-#define IRQ7 39
-#define IRQ8 40
-#define IRQ9 41
-#define IRQ10 42
-#define IRQ11 43
-#define IRQ12 44
-#define IRQ13 45
-#define IRQ14 46
-#define IRQ15 47
+#define IRQ_DE      0x00
+#define IRQ_DB      0x01
+#define IRQ_NI      0x02
+#define IRQ_BP      0x03
+#define IRQ_OF      0x04
+#define IRQ_BR      0x05
+#define IRQ_UD      0x06
+#define IRQ_NM      0x07
+#define IRQ_DF      0x08
+#define IRQ_CO      0x09
+#define IRQ_TS      0x0A
+#define IRQ_NP      0x0B
+#define IRQ_SS      0x0C
+#define IRQ_GP      0x0D
+#define IRQ_PF      0x0E
+#define IRQ_MF      0x10
+#define IRQ_AC      0x11
+#define IRQ_MC      0x12
+#define IRQ_XM      0x13
+#define IRQ_PIT     0x20
+#define IRQ_KBD     0x21
+#define IRQ_CASCADE 0x22
+#define IRQ_COM2    0x23
+#define IRQ_COM1    0x24
+#define IRQ_SOUND   0x25
+#define IRQ_SDA     0x26
+#define IRQ_PP      0x27
+#define IRQ_RTC     0x28
+#define IRQ_MOUSE   0x2C
+#define IRQ_FPU     0x2D
+#define IRQ_ATAP    0x2E
+#define IRQ_ATAS    0x2F
+#define IRQ_SYSCALL 0x80
 
 typedef struct registers {
     uint32_t ds;					/* Data segment selector */

@@ -11,7 +11,7 @@ struct vfs_filesystem {
     uint32_t (*close)(struct vfs_filesystem *self, uint32_t id);
     uint32_t (*read)(struct vfs_filesystem *self, uint32_t id, uint32_t offset, uint32_t count, void *buffer);
     uint32_t (*write)(struct vfs_filesystem *self, uint32_t id, uint32_t offset, uint32_t count, void *buffer);
-    uint32_t (*find)(struct vfs_filesystem *self, int8_t *path);
+    uint32_t (*find)(struct vfs_filesystem *self, const int8_t *path);
     void *(*get_physical)(struct vfs_filesystem *self, uint32_t id);
 };
 
