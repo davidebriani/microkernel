@@ -9,15 +9,14 @@ void kernel_init(kernel_arch *arch)
     /* TODO: Put vga stuff into a module */
     /* Setup the screen (by clearing it) */
     vga_device_init();
-    log_write("# Screen (text mode)\tOK\n");
 
     kernelArch = arch;
     if (!kernelArch)
 	PANIC("No registered architecture.");
 
-    log_write("# Arch: %s\t\tOK\n", kernelArch->name);
+    multiboot_init(kernelArch->magic, kernelArch->mboot);
 
-    mboot_init(kernelArch->magic, kernelArch->mboot);
+    log_write("# Arch: %s\t\tOK\n", kernelArch->name);
 
     /* Setup architecture-dep. stuff */
     if (kernelArch->setup)

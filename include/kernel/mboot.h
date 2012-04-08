@@ -66,6 +66,22 @@ struct multiboot_header {
 
 typedef struct multiboot_header multiboot_header_t;
 
-void mboot_init(uint32_t magic, multiboot_header_t *header);
+struct multiboot_mmap {
+    uint32_t size;
+    uint32_t blow;
+    uint32_t bhigh;
+    uint32_t llow;
+    uint32_t lhigh;
+    uint32_t type;
+};
+
+struct multiboot_module {
+    uint32_t base;
+    uint32_t length;
+    uint32_t name;
+    uint32_t reserved;
+};
+
+void multiboot_init(uint32_t magic, multiboot_header_t *header);
 
 #endif
