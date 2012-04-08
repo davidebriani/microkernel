@@ -10,17 +10,19 @@ static uint32_t parse(void *address) {
     uint32_t i, size;
     struct tar_header *header;
 
+    int8_t *current = (int8_t *)address;
+
     /* TODO: Verify !strcmp(header->magic, TAR_MAGIC); */
-    for (i = 0; *(int8_t *)address; i++) {
-        header = address;
+    for (i = 0; *current; i++) {
+        header = (struct tar_header *) current;
         size = strreadn(header->size, 8);
 
-        ramdisk_node_init(&nodes[i], header->name, size, header, address + TAR_BLOCK_SIZE);
+        ramdisk_node_init(&nodes[i], header->name, size, header, current + TAR_BLOCK_SIZE);
 
-        address += ((size / TAR_BLOCK_SIZE) + 1) * TAR_BLOCK_SIZE;
+        current += ((size / TAR_BLOCK_SIZE) + 1) * TAR_BLOCK_SIZE;
 
         if (size % TAR_BLOCK_SIZE)
-            address += TAR_BLOCK_SIZE;
+            current += TAR_BLOCK_SIZE;
     }
     return i;
 }

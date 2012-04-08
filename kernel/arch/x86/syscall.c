@@ -15,11 +15,11 @@ void syscalls_init(void) {
 
 void syscall_handler(registers_t *regs) {
     int32_t ret;
-    void *location;
+    void (*function)(void);
 
     /* Get the required syscall callback */
-    location = syscall_get_function(regs->eax);
-    if (!location)
+    function = syscall_get_function(regs->eax);
+    if (!function)
 	return;
 
     /* We don't know how many parameters the function wants, so we just push
@@ -37,6 +37,6 @@ void syscall_handler(registers_t *regs) {
       pop %%ebx; \
       pop %%ebx; \
       pop %%ebx; \
-    " : "=a" (ret) : "r" (regs->edi), "r" (regs->esi), "r" (regs->edx), "r" (regs->ecx), "r" (regs->ebx), "r" (location));
+    " : "=a" (ret) : "r" (regs->edi), "r" (regs->esi), "r" (regs->edx), "r" (regs->ecx), "r" (regs->ebx), "r" (function));
     regs->eax = ret;
 }

@@ -45,23 +45,22 @@ void kernel_init(kernel_arch *arch)
     symbol_init();
     log_write("# Kernel symbols\tOK\n");
 
-#if KERNEL_DEBUG
-    kernel_test();
-#endif
+    if (KERNEL_DEBUG)
+	kernel_test();
 
     /* Setup syscalls */
     syscalls_init();
     log_write("# Syscalls\t\tOK\n");
 
-#if KERNEL_TEST
-    /* Setup multitasking */
-    tasking_init();
-    log_write("# Multitasking\t\tOK\n");
+    if (KERNEL_TEST) {
+	/* Setup multitasking */
+	tasking_init();
+	log_write("# Multitasking\t\tOK\n");
 
-    /* Switch to user mode */
-    usermode_init();
-    log_write("# Usermode\t\tOK\n");
-#endif
+	/* Switch to user mode */
+	usermode_init();
+	log_write("# Usermode\t\tOK\n");
+    }
 
     /* Init a demo shell: will be a loadable exec. */
     shell_init();
@@ -74,7 +73,7 @@ static void kernel_test(void) {
     log_write("# Testing timer........\n");
     sleep(1);
 
-    puts("# Testing PC speaker...\n");
+    log_write("# Testing PC speaker...\n");
     beep(3000, 0.3);
     beep(2000, 0.3);
     beep(1000, 0.3);
@@ -94,13 +93,13 @@ static void kernel_test(void) {
     a = (void *) kmalloc(8);
     b = (void *) kmalloc(8);
     c = (void *) kmalloc(8);
-    kprintf("a: 0x%x\n", a);
-    kprintf("b: 0x%x\n", b);
-    kprintf("c: 0x%x\n", c);
+    log_write("a: 0x%x\n", a);
+    log_write("b: 0x%x\n", b);
+    log_write("c: 0x%x\n", c);
     kfree(c);
     kfree(b);
     d = (void *) kmalloc(12);
-    kprintf("d: 0x%x\n", d);
+    log_write("d: 0x%x\n", d);
     kfree(a);
     kfree(d);
 

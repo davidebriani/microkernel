@@ -18,14 +18,16 @@ static uint32_t close(struct vfs_filesystem *self, uint32_t id) {
 
 static uint32_t read(struct vfs_filesystem *self, uint32_t id, uint32_t offset, uint32_t count, void *buffer) {
     uint32_t i, length, size, slash;
-    uint8_t *start;
+    const int8_t *start;
     struct ramdisk_node *node = &nodes[id - 1];
+
+    int8_t *in = (int8_t *)buffer;
 
     if (node->header->typeflag[0] == TAR_FILETYPE_DIR) {
 	length = 7;
 	if (length > count)
 	    return 0;
-        strwrt(buffer, "./\n../\n", length);
+        strwrt(in, "./\n../\n", length);
 
         for (i = 0; i < nodesCount; i++) {
             if (&nodes[i] == node)
@@ -41,17 +43,17 @@ static uint32_t read(struct vfs_filesystem *self, uint32_t id, uint32_t offset, 
                 continue;
 
 	    /* if we have to read too much */
-	    if (length + strlen(buffer + length) > count)
+	    if (length + strlen(in + length) > count)
 		return length; /* return 0 ? */
 
-            strwrt(buffer + length, "%s\n", start);
-            length += strlen(buffer + length);
+            strwrt(in + length, "%s\n", start);
+            length += strlen(in + length);
         }
         return length;
     } else {
         if (count + offset > node->size)
             count = node->size - offset;
-        memcpy(buffer, node->data + offset, count);
+        memcpy(in, (int8_t *)node->data + offset, count);
         return count;
     }
 
@@ -61,12 +63,14 @@ static uint32_t read(struct vfs_filesystem *self, uint32_t id, uint32_t offset, 
 static uint32_t write(struct vfs_filesystem *self, uint32_t id, uint32_t offset, uint32_t count, void *buffer) {
     struct ramdisk_node *node = &nodes[id - 1];
 
+    int8_t *in = (int8_t *)buffer;
+
     if (node->header->typeflag[0] == TAR_FILETYPE_DIR) {
         return 0;
     } else {
         if (count + offset > node->size)
             count = node->size - offset;
-        memcpy(node->data + offset, buffer, count);
+        memcpy((int8_t *)node->data + offset, in, count);
         return count;
     }
 

@@ -6,7 +6,7 @@
 static struct symbol_entry symbol_entries[SYMBOL_ENTRY_SLOTS];
 static int8_t symbol_map[SYMBOL_MAP_SIZE];
 
-void *symbol_find(const int8_t *name) {
+uint32_t symbol_find(const int8_t *name) {
     uint32_t i;
 
     for (i = 0; i < SYMBOL_ENTRY_SLOTS; i++)
@@ -33,7 +33,7 @@ void symbol_init(void) {
                 symbol_map[i] = '\0';
 		/* TODO: I don't like this '+ 11' below */
                 strwrt(symbol_entries[index].name, "%s", symbol_map + start + 11);
-                symbol_entries[index].paddress = (void *) strreadn(symbol_map + start, 16);
+                symbol_entries[index].paddress = strreadn(symbol_map + start, 16);
                 index++;
                 start = i + 1;
                 break;

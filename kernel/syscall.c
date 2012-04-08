@@ -1,8 +1,9 @@
 #include <kernel/syscall.h>
 #include <kernel/kernel.h>
 #include <kernel/vfs.h>
+#include <kernel/log.h>
 
-static void *syscalls[SYSCALL_SLOTS] = { 0 };
+static void (*syscalls[SYSCALL_SLOTS])(void) = { 0 };
 
 /* Here goes all static uint32_t _syscall(*) definitions */
 
@@ -38,7 +39,7 @@ static uint32_t _load(const int8_t *path) {
 /* TODO: ELF relocation
 
     elf_relocate(physical);
-    init = elf_get_symbol(physical, "init");
+    init = (void (*)(void)) elf_get_symbol(physical, "init");
 
 */
 
@@ -50,7 +51,7 @@ static uint32_t _load(const int8_t *path) {
     return 1;
 }
 
-void *syscall_get_function(uint32_t int_no) {
+void (*syscall_get_function(uint32_t int_no))(void) {
     /* Check if the requested syscall number is valid */
     if (int_no >= SYSCALL_SLOTS)
 	return 0;
@@ -64,9 +65,9 @@ void *syscall_get_function(uint32_t int_no) {
 
 void syscall_setup(void) {
     /* Register and connect functions to their syscall number */
-    syscalls[SYSCALL_PUTS] =	&_puts;
-    syscalls[SYSCALL_PUTC] =	&_putc;
-    syscalls[SYSCALL_HALT] =	&_halt;
-    syscalls[SYSCALL_REBOOT] =	&_reboot;
-    syscalls[SYSCALL_LOAD] =	&_load;
+    syscalls[SYSCALL_PUTS] =	(void (*)(void)) &_puts;
+    syscalls[SYSCALL_PUTC] =	(void (*)(void)) &_putc;
+    syscalls[SYSCALL_HALT] =	(void (*)(void)) &_halt;
+    syscalls[SYSCALL_REBOOT] =	(void (*)(void)) &_reboot;
+    syscalls[SYSCALL_LOAD] =	(void (*)(void)) &_load;
 }

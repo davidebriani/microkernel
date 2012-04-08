@@ -44,7 +44,7 @@ static void clear_frame(uint32_t frame_addr)
     frames[idx] &= ~(0x1 << off);
 }
 
-/* Static function to test if a bit is set. */
+/* Static function to test if a bit is set.
 static uint32_t test_frame(uint32_t frame_addr)
 {
     uint32_t frame, idx, off;
@@ -53,7 +53,7 @@ static uint32_t test_frame(uint32_t frame_addr)
     idx = INDEX_FROM_BIT(frame);
     off = OFFSET_FROM_BIT(frame);
     return (frames[idx] & (0x1 << off));
-}
+} */
 
 /* Static function to find the first free frame. */
 static uint32_t first_frame(void)

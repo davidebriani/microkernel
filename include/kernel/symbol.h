@@ -8,10 +8,10 @@
 
 struct symbol_entry {
     int8_t name[32];
-    void *paddress;
+    uint32_t paddress;
 };
 
-void *symbol_find(const int8_t *name);
+uint32_t symbol_find(const int8_t *name);
 void symbol_init(void);
 
 #endif

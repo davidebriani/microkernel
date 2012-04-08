@@ -12,7 +12,7 @@
 #define SYSCALL_REBOOT 0x03
 #define SYSCALL_LOAD 0x04
 
-void *syscall_get_function(uint32_t int_no);
+void (*syscall_get_function(uint32_t int_no))(void);
 void syscall_setup(void);
 
 #endif

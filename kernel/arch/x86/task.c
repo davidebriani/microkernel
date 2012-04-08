@@ -43,9 +43,9 @@ void tasking_init()
     cpu_enable_interrupts();
 }
 
-void move_stack(void *new_stack_start, uint32_t size)
-{
-    uint32_t i;
+void move_stack(void *new_stack_start, uint32_t size) {
+    uint32_t i, pd_addr, old_stack_pointer, old_base_pointer, new_stack_pointer, new_base_pointer, offset, tmp, *tmp2;
+
     /* Allocate some space for the new stack */
     for( i = (uint32_t) new_stack_start; i >= ((uint32_t) new_stack_start-size); i -= 0x1000)
     {
@@ -54,21 +54,19 @@ void move_stack(void *new_stack_start, uint32_t size)
     }
 
     /* Flush the TLB by reading and writing the page directory address again */
-    uint32_t pd_addr;
-
     __asm__ __volatile__("mov %%cr3, %0" : "=r" (pd_addr));
     __asm__ __volatile__("mov %0, %%cr3" : : "r" (pd_addr));
 
     /* Old ESP and EBP, read from registers */
-    uint32_t old_stack_pointer; __asm__ __volatile__("mov %%esp, %0" : "=r" (old_stack_pointer));
-    uint32_t old_base_pointer;  __asm__ __volatile__("mov %%ebp, %0" : "=r" (old_base_pointer));
+    __asm__ __volatile__("mov %%esp, %0" : "=r" (old_stack_pointer));
+    __asm__ __volatile__("mov %%ebp, %0" : "=r" (old_base_pointer));
 
     /* Offset to add to old stack addresses to get a new stack address */
-    uint32_t offset = (uint32_t) new_stack_start - initial_esp;
+    offset = (uint32_t) new_stack_start - initial_esp;
 
     /* New ESP and EBP */
-    uint32_t new_stack_pointer = old_stack_pointer + offset;
-    uint32_t new_base_pointer  = old_base_pointer  + offset;
+    new_stack_pointer = old_stack_pointer + offset;
+    new_base_pointer  = old_base_pointer  + offset;
 
     /* Copy the stack */
     memcpy((void *)new_stack_pointer, (void *)old_stack_pointer, initial_esp-old_stack_pointer);
@@ -76,14 +74,14 @@ void move_stack(void *new_stack_start, uint32_t size)
     /* Backtrace through the original stack, copying new values into the new stack */
     for(i = (uint32_t)new_stack_start; i > (uint32_t)new_stack_start-size; i -= 4)
     {
-	uint32_t tmp = * (uint32_t *) i;
+	tmp = * (uint32_t *) i;
 	/* If the value of tmp is inside the range of the old stack, assume it is a base pointer
 	*  and remap it. This will unfortunately remap ANY value in this range, whether they are
 	*  base pointers or not */
 	if (( old_stack_pointer < tmp) && (tmp < initial_esp))
 	{
 	    tmp = tmp + offset;
-	    uint32_t *tmp2 = (uint32_t *) i;
+	    tmp2 = (uint32_t *) i;
 	    *tmp2 = tmp;
 	}
     }
@@ -93,14 +91,14 @@ void move_stack(void *new_stack_start, uint32_t size)
     __asm__ __volatile__("mov %0, %%ebp" : : "r" (new_base_pointer));
 }
 
-void task_switch()
-{
+void task_switch() {
+    uint32_t esp, ebp, eip;
+
     /* If we haven't initialised tasking yet, just return */
     if (!current_task)
 	return;
 
     /* Read esp, ebp now for saving later on */
-    uint32_t esp, ebp, eip;
     __asm__ __volatile__("mov %%esp, %0" : "=r"(esp));
     __asm__ __volatile__("mov %%ebp, %0" : "=r"(ebp));
 
@@ -160,19 +158,22 @@ void task_switch()
 	jmp *%%ecx		" : : "r"(eip), "r"(esp), "r"(ebp), "r"(current_directory->physicalAddr));
 }
 
-int32_t task_fork()
-{
+int32_t task_fork() {
+    uint32_t eip, esp, ebp;
+    task_t *parent_task, *new_task, *tmp_task;
+    page_directory_t *directory;
+
     /* We are modifying kernel structures, and so cannot */
     cpu_disable_interrupts();
 
     /* Take a pointer to this process' task struct for later reference */
-    task_t *parent_task = (task_t *) current_task;
+    parent_task = (task_t *) current_task;
 
     /* Clone the address space */
-    page_directory_t *directory = clone_directory(current_directory);
+    directory = clone_directory(current_directory);
 
     /* Create a new process */
-    task_t *new_task = (task_t *) kmalloc(sizeof(task_t));
+    new_task = (task_t *) kmalloc(sizeof(task_t));
 
     new_task->id = next_pid++;
     new_task->esp = new_task->ebp = 0;
@@ -182,31 +183,29 @@ int32_t task_fork()
     new_task->next = 0;
 
     /* Add it to the end of the ready queue */
-    task_t *tmp_task = (task_t *) ready_queue;
+    tmp_task = (task_t *) ready_queue;
     while (tmp_task->next)
 	tmp_task = tmp_task->next;
     tmp_task->next = new_task;
 
     /* This will be the entry point for the new process */
-    uint32_t eip = read_eip();
+    eip = read_eip();
 
 
     /* We could be the parent or the child here - check */
-    if (current_task == parent_task)
-    {
+    if (current_task == parent_task) {
 	/* We are the parent, so set up the esp/ebp/eip for our child */
-	uint32_t esp; __asm__ __volatile__("mov %%esp, %0" : "=r"(esp));
-	uint32_t ebp; __asm__ __volatile__("mov %%ebp, %0" : "=r"(ebp));
+	__asm__ __volatile__("mov %%esp, %0" : "=r"(esp));
+	__asm__ __volatile__("mov %%ebp, %0" : "=r"(ebp));
 	new_task->esp = esp;
 	new_task->ebp = ebp;
 	new_task->eip = eip;
 	new_task->parentid = parent_task->id;
-	cpu_enable_interrupts;
+	cpu_enable_interrupts();
 
 	return new_task->id;
     }
-    else
-    {
+    else {
 	/* We are the child */
 	return 0;
     }

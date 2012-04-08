@@ -9,13 +9,14 @@
 #include <kernel/vfs.h>
 #include <kernel/ramdisk.h>
 #include <kernel/symbol.h>
-#include <kernel/video/vga.h>
+#include <kernel/log.h>
 #include <kernel/kb.h>
 #include <kernel/heap.h>
 #include <kernel/arch/x86/task.h>
-#include <kernel/syscall.h>
+#include <kernel/arch/x86/syscall.h>
 #include <kernel/shell.h>
 #include <kernel/lib/string.h>
+#include <kernel/video/vga.h>
 
 #define KERNEL_DEBUG 0
 #define KERNEL_TEST  0

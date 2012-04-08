@@ -16,13 +16,14 @@ static uint32_t close(struct vfs_filesystem *self, uint32_t id) {
 static uint32_t read(struct vfs_filesystem *self, uint32_t id, uint32_t offset, uint32_t count, void *buffer) {
     uint32_t length = 7;
     uint32_t i;
+    int8_t *in = (int8_t *)buffer;
 
     if (id != 1)
         return 0;
 
     if (length > count)
 	return 0;
-    strwrt(buffer, "./\n../\n", length);
+    strwrt(in, "./\n../\n", length);
 
     for (i = 0; i < VFS_MOUNT_SLOTS; i++)
     {
@@ -33,11 +34,11 @@ static uint32_t read(struct vfs_filesystem *self, uint32_t id, uint32_t offset, 
             continue;
 
 	/* if we have to read too much */
-	if (length + strlen(buffer + length) > count)
+	if (length + strlen(in + length) > count)
 	    return length; /* return 0 ? */
 
-        strwrt(buffer + length, "%s\n", mounts[i].path + 1);
-        length += strlen(buffer + length);
+        strwrt(in + length, "%s\n", mounts[i].path + 1);
+        length += strlen(in + length);
     }
 
     return length;

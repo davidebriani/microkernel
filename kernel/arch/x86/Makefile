@@ -2,6 +2,7 @@ ROOTDIR := ../../..
 include $(ROOTDIR)/common.mk
 CFLAGS += -I$(ROOTDIR)/include
 ASMFILES := $(shell ls *.s)
+ASMFLAGS += -w-number-overflow
 
 .PHONY: all clean
 
