@@ -2,6 +2,7 @@
 #include <kernel/kernel.h>
 #include <kernel/vfs.h>
 #include <kernel/log.h>
+#include <kernel/elf.h>
 
 static void (*syscalls[SYSCALL_SLOTS])(void) = { 0 };
 
@@ -36,12 +37,8 @@ static uint32_t _load(const int8_t *path) {
     if (!physical)
         return 0;
 
-/* TODO: ELF relocation
-
     elf_relocate(physical);
     init = (void (*)(void)) elf_get_symbol(physical, "init");
-
-*/
 
     if (!init)
         return 0;

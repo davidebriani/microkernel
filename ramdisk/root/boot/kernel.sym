@@ -1,8 +1,5 @@
-irq_register_handler
-irq_remove_handler
-vfs_mount
-vfs_filesystem_init
 vfs_open
 vfs_close
 vfs_read
 vfs_write
+log_write

@@ -1,5 +1,5 @@
-#ifndef LIB_ELF_H
-#define LIB_ELF_H
+#ifndef KERNEL_ELF_H
+#define KERNEL_ELF_H
 
 #include <kernel/stdint.h>
 
@@ -121,5 +121,11 @@ struct elf_relocatea {
     uint32_t info;
     uint32_t addend;
 };
+
+uint32_t elf_get_entry(void *address);
+uint32_t elf_get_virtual(void *address);
+uint32_t elf_get_symbol(void *address, const int8_t *name);
+void elf_prepare(void *address);
+void elf_relocate(void *address);
 
 #endif
