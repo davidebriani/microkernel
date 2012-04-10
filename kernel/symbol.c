@@ -18,6 +18,7 @@ uint32_t symbol_find(const int8_t *name) {
 
 void symbol_init(void) {
     uint32_t count, i, start = 0, index = 0;
+    int8_t *name, *address;
 
     if (!vfs_open("/ramdisk/boot/kernel.map"))
 	PANIC("Symbol table not found.");
@@ -32,8 +33,10 @@ void symbol_init(void) {
             case '\n':
                 symbol_map[i] = '\0';
 		/* TODO: I don't like this '+ 11' below */
-                strwrt(symbol_entries[index].name, "%s", symbol_map + start + 11);
-                symbol_entries[index].paddress = strreadn(symbol_map + start, 16);
+		name = symbol_map + start + 11;
+		address = symbol_map + start;
+                memcpy(symbol_entries[index].name, name, strlen(name) + 1);
+                symbol_entries[index].paddress = strreadn(address, 16);
                 index++;
                 start = i + 1;
                 break;
