@@ -59,10 +59,10 @@ bochs-x86-cdrom:
 	echo "Couldn't run bochs with cdrom..."
 
 qemu-x86-floppy:
-	qemu -cpu 486 -smp 1,cores=1,threads=1 -m 32 -k it -soundhw pcspk -fda floppy.img >qemu.log
+	qemu-system-i386 -cpu 486 -smp 1,cores=1,threads=1 -m 32 -k it -soundhw pcspk -fda floppy.img >qemu.log
 
 qemu-x86-cdrom:
-	qemu -cpu 486 -smp 1,cores=1,threads=1 -m 32 -k it -soundhw pcspk -cdrom $(KERNEL).iso >qemu.log
+	qemu-system-i386 -cpu 486 -smp 1,cores=1,threads=1 -m 32 -k it -soundhw pcspk -cdrom $(KERNEL).iso >qemu.log
 
 # [4] make clean		Clean the environment and remove compiled object files.
 clean:

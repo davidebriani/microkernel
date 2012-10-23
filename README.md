@@ -2,20 +2,20 @@
 
 Licensed under the terms of the MIT Licence: see LICENSE file for details.
 
-This is not a true, functional kernel or OS. This is a toy to play with: It am trying to learn something interesting about kernels and how they work and I came up with this; you'll forgive me for being such a newbie...
+This is not a true, functional kernel or OS. This is a toy to play with: I was trying to learn something interesting about kernels and how they work and I came up with this; you'll forgive me for being such a newbie...
 The... thing is currently designed for x86 cpu only, gets started by GRUB (or any other multiboot compliant bootloader), and works in Protected Mode. It's in a very early state of development and, of course, it is absolutely not useful.
 
 
 
 ## Dependencies (tools it is known to work with)
 
-    GNU gcc	4.6.3-1
-    Nasm	2.09.10
-    GNU ld	2.22
+    GNU gcc	4.7.2-2
+    Nasm	2.10.01
+    GNU ld	2.22.90
     GNU Make	3.81
 
     Optional:
-    Qemu	1.0
+    Qemu	1.2.0
     Bochs	2.4.6
 
 

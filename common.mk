@@ -2,7 +2,6 @@
 
 # Architecture to build for: x86
 ARCH := x86
-include $(ROOTDIR)/$(ARCH).mk
 
 # About the kernel
 KERNEL_AUTHOR := TheWorm
@@ -38,3 +37,10 @@ LD := ld
 
 # Virtual machine - emulator: qemu, bochs
 VM := qemu
+
+
+
+########## ARCH-SPECIFIC CONFIGURATION ##########
+
+# Add specific cflags, etc.
+include $(ROOTDIR)/$(ARCH).mk
