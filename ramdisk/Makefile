@@ -4,6 +4,7 @@ include $(ROOTDIR)/common.mk
 .PHONY: all clean
 
 all:
+	-@if [ ! -d root/mods/ ]; then mkdir root/mods/; fi
 	for file in $(shell find -L $(ROOTDIR)/mods -type f -name "*.ko"); do \
 	    cp $$file root/mods/; \
 	done
