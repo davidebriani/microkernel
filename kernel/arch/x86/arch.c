@@ -23,7 +23,7 @@ static void arch_x86_reboot(void) {
 }
 
 static void arch_x86_poweroff(void) {
-    for(;;) cpu_halt();}
+    for(;;) cpu_halt();
 
 	/* TODO: Get back into Real Mode first */
     if (apm_check_exist()) {
