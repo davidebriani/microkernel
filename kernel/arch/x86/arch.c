@@ -8,6 +8,7 @@
 #include <kernel/arch/x86/mmu.h>
 #include <kernel/mboot.h>
 #include <kernel/lib/string.h>
+#include <kernel/arch/x86/apm.h>
 
 static arch_x86 x86;
 uint32_t initial_esp;
@@ -19,6 +20,23 @@ static void arch_x86_reboot(void) {
     while (ready & 0x02)
         ready = io_inb(0x64);
     io_outb(0x64, 0xFE);
+}
+
+static void arch_x86_poweroff(void) {
+    for(;;) cpu_halt();}
+
+	/* TODO: Get back into Real Mode first */
+    if (apm_check_exist()) {
+		apm_disconnect();
+		apm_connect();
+		apm_enable_power_management();
+		apm_driver_version();
+		apm_enable_device_power_management();
+		apm_engage_power_management();
+		apm_poweroff();
+	}
+
+    for(;;) cpu_halt();
 }
 
 static void arch_x86_setup(void) {
@@ -43,7 +61,7 @@ void arch_init(uint32_t magic, multiboot_header_t *header, void *stack) {
     x86.setup = arch_x86_setup;
     x86.setup_mmu = mmu_init;
     x86.reboot = arch_x86_reboot;
-    x86.halt = cpu_halt;
+    x86.halt = arch_x86_poweroff;
     x86.enable_interrupts = cpu_enable_interrupts;
     x86.disable_interrupts = cpu_disable_interrupts;
     x86.enter_usermode = cpu_enter_usermode;
